@@ -3,6 +3,7 @@
 using namespace std;
 
 const char EXIT_INSTRUCTION = 'x';
+const char ANSWER_INSTRUCTION = '=';
 
 void error(string const& message) {
   cout << message << endl;
@@ -30,7 +31,7 @@ class TokenStream {
     char ch;
     cin >> ch;
     switch (ch) {
-      case ';':
+      case ANSWER_INSTRUCTION:
       case EXIT_INSTRUCTION:
       case '(':
       case ')':
@@ -157,7 +158,7 @@ int main() {
   while (cin) {
     Token t = ts.get();
     if (t.kind == EXIT_INSTRUCTION) break;
-    if (t.kind == ';')
+    if (t.kind == ANSWER_INSTRUCTION)
       cout << "=" << val << endl;
     else
       ts.putback(t);
