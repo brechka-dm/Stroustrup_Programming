@@ -1,9 +1,16 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
 const char EXIT_INSTRUCTION = 'x';
 const char ANSWER_INSTRUCTION = '=';
+const string WELCOME_STRING =
+    "Welcome to the calculator program!\n"
+    "Please enter expressions containing floating point numbers.\n"
+    "You can use \"+\", \"-\", \"*\", \"/\" and \"(\", \")\" to create expression.\n"
+    "Press \"=\" to get answer.\n"
+    "Press \"x\" to exit program.";
 
 void error(string const& message) {
   cout << message << endl;
@@ -155,6 +162,9 @@ double expression() {
 
 int main() {
   double val = 0;
+
+  cout << WELCOME_STRING << endl;
+
   while (cin) {
     Token t = ts.get();
     if (t.kind == EXIT_INSTRUCTION) break;
