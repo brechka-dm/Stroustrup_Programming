@@ -56,7 +56,10 @@ class TokenStream {
       default:
         error("Incorrect token");
     }
+
+    return Token('0');
   }
+
   void putback(Token const& t) {
     if (full) error("Token buffer is full. Unable o putback");
     buffer = t;
@@ -68,27 +71,37 @@ class TokenStream {
   Token buffer;
 };
 
-Token get_token();
+TokenStream ts;
+
+double expression();
 
 double primary() {
-  Token t = get_token();
+  Token t = ts.get();
   switch (t.kind) {
     case '(': {
       double d = expression();
-      t = get_token();
+      t = ts.get();
       if (t.kind != ')') error("Invalid expression: \')\' expected");
       return d;
     }
     case '8':
       return t.value;
+    
+    // This case added to correctly handle 'q' instruction.
+    case 'q':
+      ts.putback(t);
+
+      // Default return value. Not analyzed by the program.
+      return -1;
     default:
       error("Ptimary expression expected");
   }
+
+  // Should be unreachable. Without this return the function will not compile.
+  return -1;
 }
 
 double term() {
-  TokenStream ts;
-
   double left = primary();
   Token t = ts.get();
   while (true) {
@@ -97,22 +110,24 @@ double term() {
         left *= primary();
         t = ts.get();
         break;
-      case '/':
+      case '/': {
         double d = primary();
         if (d == 0) error("Division by zero");
         left /= d;
         t = ts.get();
         break;
+      }
       default:
         ts.putback(t);
         return left;
     }
   }
+
+  // Should be unreachable. Without this return the function will not compile.
+  return -1;
 }
 
 double expression() {
-  TokenStream ts;
-
   double left = term();
   Token t = ts.get();
   while (true) {
@@ -130,12 +145,13 @@ double expression() {
         return left;
     }
   }
+  
+  // Should be unreachable. Without this return the function will not compile.
+  return -1;
 }
 
 int main() {
   double val = 0;
-  TokenStream ts;
-
   while (cin) {
     Token t = ts.get();
     if (t.kind == 'q') break;
@@ -145,4 +161,6 @@ int main() {
       ts.putback(t);
     val = expression();
   }
+
+  return 0;
 }
