@@ -1,100 +1,113 @@
-#include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <set>
-#include <sstream>
-#include <string>
-#include <vector>
 
 using namespace std;
 
-// Sets described in Chapter 21.
-set<string> conjunctions = {"and", "or", "but"};
-set<string> nouns = {"birds", "fish", "c++"};
-set<string> verbs = {"rules", "fly", "swim"};
-set<string> articles = {"the"};
+const char INVALID_TOKEN = '_';
 
-// We use this function to convert the letters in a word to lower case, so that
-// we don't have to process capital and small letter words separately.
-string strToLowerCopy(string const& str) {
-  // We make a copy of the function argument because the string changes inside
-  // the function, but we don't want the string passed to the function by
-  // reference to change.
-  string strCopy = str;
+const set<char> specialSymbols = {'!', '~', '&', '^', '(', ')', 'L'};
 
-  // transform described in:
-  // https://en.cppreference.com/w/cpp/algorithm/transform
-  transform(strCopy.begin(), strCopy.end(), strCopy.begin(),
-            [](unsigned char c) { return tolower(c); });
-  return strCopy;
+void error(string const& message) {
+  cout << message << endl;
+  exit(1);
 }
 
-// Auxiliary Function. Determines whether the word is in the wordSet.
-bool isStringInSet(string const& word, set<string> const& wordSet) {
-  string lowerWord = strToLowerCopy(word);
-  return wordSet.find(lowerWord) != wordSet.end();
+class Token {
+  char pKind = INVALID_TOKEN;
+
+ public:
+  Token() : pKind(INVALID_TOKEN) {}
+  explicit Token(char c) : pKind(c) {}
+  char kind() const { return pKind; }
+};
+
+class TokenStream {
+  bool pFull;
+  Token pBuffer;
+
+ public:
+  TokenStream() : pFull(false) {}
+  Token get() {
+    if (pFull) {
+      pFull = false;
+      return pBuffer;
+    }
+
+    char c;
+    cin >> c;
+    if (specialSymbols.find(c) != specialSymbols.end()) return Token(c);
+    if (c >= 'a' && c <= 'z') return Token('L');
+    error("Incorrect token: \"" + string(&c) + "\"");
+    return Token();
+  }
+
+  void putback(Token const& t) {
+    if (pFull) error("Token buffer is full. Unable o putback");
+    pBuffer = t;
+    pFull = true;
+  }
+
+  bool isNext() {
+    if (pFull) return true;
+    char c;
+    cin >> c;
+    if (!cin) return false;
+    pBuffer = Token(c);
+    pFull = true;
+  }
+};
+
+TokenStream ts;
+
+bool term2();
+
+bool term() {
+  Token t = ts.get();
+  if (t.kind() == 'L') return true;
+  ts.putback(t);
+  return term2();
 }
 
-bool isConjunction(string const& word) {
-  return isStringInSet(word, conjunctions);
-}
-
-bool isNoun(string const& word) { return isStringInSet(word, nouns); }
-
-bool isVerb(string const& word) { return isStringInSet(word, verbs); }
-
-bool isArticle(string const& word) { return isStringInSet(word, articles); }
-
-bool isNounWithArticle(vector<string> const& words) {
-  // There should be 2 words: article and noun.
-  if (words.size() < 2) return false;
-  return isArticle(words[0]) && isNoun(words[1]);
-}
-
-bool isSimpleSentence(vector<string> const& words) {
-  // There may be 2 or 3 words: noun and verb or article, noun and verb.
-  switch (words.size()) {
-    case 2:
-      return isNoun(words[0]) && isVerb(words[1]);
-    case 3:
-      return isNounWithArticle({words[0], words[1]}) && isVerb(words[2]);
+bool primaryTerm() {
+  if (term()) return true;
+  Token t = ts.get();
+  if (t.kind() == '(') {
+    bool isTerm = term();
+    t = ts.get();
+    return t.kind() == ')';
   }
   return false;
 }
 
-bool isSentence(string const& str) {
-  // Look for " . ". It must be present and must be at the end of the str.
-  const string endOfSentence = " . ";
-  std::size_t pos = str.rfind(endOfSentence);
-  if (pos == string::npos || pos != str.size() - 3) return false;
-
-  if (str.length() < 2) return 0;
-
-  // stringstream described in Chapter 23. It will help us to split str to
-  // separate words.
-  stringstream stream(str);
-  vector<string> words;
-  string word;
-  bool sentenceFound = false;
-
-  // While there words in string.
-  while (stream >> word) {
-    if (sentenceFound && isConjunction(word)) {
-      words.clear();
-      sentenceFound = false;
-      continue;
-    }
-    words.push_back(word);
-    if (words.size() > 1 && words.size() <= 3 && isSimpleSentence(words))
-      sentenceFound = true;
-    if (words.size() > 3) return false;
+bool term0() {
+  Token t = ts.get();
+  switch (t.kind()) {
+    case '~':
+      return primaryTerm();
+    case '!':
+      return primaryTerm();
   }
-  return sentenceFound;
+
+  return false;
+}
+
+bool term1() {
+  if (!term0()) return false;
+  if (!ts.isNext()) return true;
+  Token t = ts.get();
+  if (t.kind() == '&') return term1();
+  return false;
+}
+
+bool term2() {
+  if (!term1()) return false;
+  if (!ts.isNext()) return true;
+  Token t = ts.get();
+  if (t.kind() == '^') return term1();
+  return false;
 }
 
 int main() {
-  string input;
-  getline(cin, input);
-  cout << boolalpha << isSentence(input);
+  cout << boolalpha << term();
   return 0;
 }
