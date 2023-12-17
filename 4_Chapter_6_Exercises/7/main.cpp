@@ -2,82 +2,69 @@
 #include <set>
 #include <string>
 
+#include "Token.h"
+
 using namespace std;
-
-const char INVALID_TOKEN = '_';
-
-const set<char> specialSymbols = {'!', '~', '&', '^', '(', ')', '.', ';'};
-
-bool isSpecial(char c) {
-  return specialSymbols.find(c) != specialSymbols.end();
-}
-
-bool isLiteral(char c) { return c == '0' || c == '1' || c >= 'a' && c <= 'z'; }
 
 void error(string const& message) {
   cout << message << endl;
   exit(1);
 }
 
-class Token {
-  char pKind = INVALID_TOKEN;
-  bool pValue = false;
-
- public:
-  explicit Token(char c) : pKind(c), pValue(false) {}
-  Token(char c, bool value) : pKind(c), pValue(value) {}
-  char kind() const { return pKind; }
-  bool value() const { return pValue; }
-};
-
 class TokenStream {
   bool pFull;
   Token pBuffer;
+  string pString;
+  int pCounter;
 
  public:
-  TokenStream() : pFull(false), pBuffer(INVALID_TOKEN) {}
+  TokenStream()
+      : pFull(false), pBuffer(TokenType::Invalid), pString(), pCounter(0) {}
+  TokenStream(const string& str)
+      : pFull(false), pBuffer(TokenType::Invalid), pString(str), pCounter(0) {}
+
   Token get() {
     if (pFull) {
       pFull = false;
+      pCounter++;
       return pBuffer;
     }
 
-    char c;
-    cin >> c;
-    if (isSpecial(c)) return Token(c);
-    if (isLiteral(c)) return Token('L', true);
-    error("Invalid token");
+    if (pCounter >= pString.size()) {
+      return Token(TokenType::EndOfString);
+    }
 
-    // Default value.
-    return pBuffer;
+    return Token(pString[pCounter++]);
   }
 
   void putback(Token const& t) {
     if (pFull) error("Token buffer is full. Unable to putback");
     pBuffer = t;
     pFull = true;
+    pCounter--;
   }
 };
 
 TokenStream ts;
 
 bool expr();
+bool term();
 
 bool primary() {
   Token t = ts.get();
-  switch (t.kind()) {
-    case '(': {
-      bool v = expr();
+  switch (t.getType()) {
+    case TokenType::OpenParenthesis: {
+      bool v = term();
       t = ts.get();
-      if (t.kind() != ')') error("Invalid expression: \')\' expected");
+      if (t.getType() != TokenType::CloseParenthesis)
+        error("Invalid expression: \')\' expected");
       return v;
     }
-    case 'L':
-      return t.value();
-
-      // exit
-    case ';':
-      ts.putback(t);
+    case TokenType::Literal:
+      return true;
+    case TokenType::EndOfString:
+      return false;
+    default:
       return false;
   }
   error("Ptimary expression expected");
@@ -87,10 +74,10 @@ bool primary() {
 bool term() {
   Token t = ts.get();
   while (true) {
-    switch (t.kind()) {
-      case '~':
+    switch (t.getType()) {
+      case TokenType::Extension:
         return expr();
-      case '!':
+      case TokenType::Inversion:
         return expr();
       default:
         ts.putback(t);
@@ -104,12 +91,12 @@ bool expr() {
   bool left = primary();
   Token t = ts.get();
   while (true) {
-    switch (t.kind()) {
-      case '&':
+    switch (t.getType()) {
+      case TokenType::Conjunction:
         left = left && primary();
         t = ts.get();
         break;
-      case '^': {
+      case TokenType::Disjunction: {
         left = left && primary();
         t = ts.get();
         break;
@@ -124,16 +111,21 @@ bool expr() {
   return false;
 }
 
-int main() {
-  bool val = false;
-  while (cin) {
-    Token t = ts.get();
-    if (t.kind() == '.') break;
-    if (t.kind() == ';')
-      cout << boolalpha << val << endl;
-    else
-      ts.putback(t);
-    val = term();
+class Recognizer {
+  TokenStream pTokenStream;
+
+ public:
+  // Recognizer(string const& str) :pTokenStream(str){}
+  bool recognize(string const& str) {
+    ts = TokenStream(str);
+    return term();
   }
+};
+
+int main() {
+  string str;
+  getline(cin, str);
+  Recognizer r;
+  cout << boolalpha << r.recognize(str) << endl;
   return 0;
 }

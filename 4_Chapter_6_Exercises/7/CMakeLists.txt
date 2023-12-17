@@ -4,5 +4,9 @@ set(CMAKE_CXX_COMPILER "clang++")
 
 project(Ex7)
 
-add_executable(Ex7 main.cpp)
+add_executable(Ex7  main.cpp
+                    Token.h
+                    TokenType.h
+                    TokenTypeFromChar.cpp TokenTypeFromChar.h
+)
 target_compile_features(Ex7 PUBLIC cxx_std_20)
