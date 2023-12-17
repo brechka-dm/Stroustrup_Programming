@@ -1,108 +1,139 @@
 #include <iostream>
 #include <set>
+#include <string>
 
 using namespace std;
 
 const char INVALID_TOKEN = '_';
 
-const set<char> specialSymbols = { '!', '~', '&', '^', '(', ')', 'L', '.'};
+const set<char> specialSymbols = {'!', '~', '&', '^', '(', ')', '.', ';'};
+
+bool isSpecial(char c) {
+  return specialSymbols.find(c) != specialSymbols.end();
+}
+
+bool isLiteral(char c) { return c == '0' || c == '1' || c >= 'a' && c <= 'z'; }
 
 void error(string const& message) {
-    cout << message << endl;
-    exit(1);
+  cout << message << endl;
+  exit(1);
 }
 
 class Token {
-    char pKind = INVALID_TOKEN;
+  char pKind = INVALID_TOKEN;
+  bool pValue = false;
 
-public:
-    Token() : pKind(INVALID_TOKEN) {}
-    explicit Token(char c) : pKind(c) {}
-    char kind() const { return pKind; }
+ public:
+  explicit Token(char c) : pKind(c), pValue(false) {}
+  Token(char c, bool value) : pKind(c), pValue(value) {}
+  char kind() const { return pKind; }
+  bool value() const { return pValue; }
 };
 
 class TokenStream {
-    bool pFull;
-    Token pBuffer;
+  bool pFull;
+  Token pBuffer;
 
-public:
-    TokenStream() : pFull(false) {}
-    Token get() {
-        if (pFull) {
-            pFull = false;
-            return pBuffer;
-        }
-
-        char c;
-        cin >> c;
-        if (specialSymbols.find(c) != specialSymbols.end()) return Token(c);
-        if (c >= 'a' && c <= 'z') return Token('L');
-        error("Incorrect token: \"" + string(&c) + "\"");
-        return Token();
+ public:
+  TokenStream() : pFull(false), pBuffer(INVALID_TOKEN) {}
+  Token get() {
+    if (pFull) {
+      pFull = false;
+      return pBuffer;
     }
 
-    void putback(Token const& t) {
-        if (pFull) error("Token buffer is full. Unable o putback");
-        pBuffer = t;
-        pFull = true;
-    }
+    char c;
+    cin >> c;
+    if (isSpecial(c)) return Token(c);
+    if (isLiteral(c)) return Token('L', true);
+    error("Invalid token");
+
+    // Default value.
+    return pBuffer;
+  }
+
+  void putback(Token const& t) {
+    if (pFull) error("Token buffer is full. Unable to putback");
+    pBuffer = t;
+    pFull = true;
+  }
 };
 
 TokenStream ts;
 
-bool term2();
+bool expr();
+
+bool primary() {
+  Token t = ts.get();
+  switch (t.kind()) {
+    case '(': {
+      bool v = expr();
+      t = ts.get();
+      if (t.kind() != ')') error("Invalid expression: \')\' expected");
+      return v;
+    }
+    case 'L':
+      return t.value();
+
+      // exit
+    case ';':
+      ts.putback(t);
+      return false;
+  }
+  error("Ptimary expression expected");
+  return false;
+}
 
 bool term() {
-    Token t = ts.get();
-    if (t.kind() == 'L') return true;
-    ts.putback(t);
-    return term2();
-}
-
-bool primaryTerm() {
-    if (term()) return true;
-    Token t = ts.get();
-    if (t.kind() == '(') {
-        bool isTerm = term();
-        t = ts.get();
-        return t.kind() == ')';
-    }
-    return false;
-}
-
-bool term0() {
-    Token t = ts.get();
+  Token t = ts.get();
+  while (true) {
     switch (t.kind()) {
-    case '~':
-        return primaryTerm();
-    case '!':
-        return primaryTerm();
-    }
-
-    return false;
-}
-
-bool term1() {
-    if (!term0()) return false;
-    Token t = ts.get();
-    if (t.kind() == '.')
-    {
+      case '~':
+        return expr();
+      case '!':
+        return expr();
+      default:
         ts.putback(t);
-        return true;
+        return expr();
     }
-    if (t.kind() == '&') return term1();
-    return false;
+  }
+  return false;
 }
 
-bool term2() {
-    if (!term1()) return false;
-    Token t = ts.get();
-    if (t.kind() == '.') return true;
-    if (t.kind() == '^') return term1();
-    return false;
+bool expr() {
+  bool left = primary();
+  Token t = ts.get();
+  while (true) {
+    switch (t.kind()) {
+      case '&':
+        left = left && primary();
+        t = ts.get();
+        break;
+      case '^': {
+        left = left && primary();
+        t = ts.get();
+        break;
+      }
+      default:
+        ts.putback(t);
+        return left;
+    }
+  }
+
+  // Should be unreachable. Without this return the function will not compile.
+  return false;
 }
 
 int main() {
-    cout << boolalpha << term();
-    return 0;
+  bool val = false;
+  while (cin) {
+    Token t = ts.get();
+    if (t.kind() == '.') break;
+    if (t.kind() == ';')
+      cout << boolalpha << val << endl;
+    else
+      ts.putback(t);
+    val = term();
+  }
+  return 0;
 }
