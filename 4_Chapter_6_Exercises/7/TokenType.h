@@ -1,5 +1,8 @@
 #pragma once
 
+/*
+ * Contains available token types. 
+ */
 enum class TokenType {
   Literal,
   OpenParenthesis,

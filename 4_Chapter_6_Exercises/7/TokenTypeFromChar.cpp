@@ -1,6 +1,6 @@
 #include "TokenTypeFromChar.h"
 
-bool isLiteral(char c) { return c == '0' || c == '1' || c >= 'a' && c <= 'z'; }
+bool isLiteral(char c) { c >= 'a' && c <= 'z'; }
 
 TokenType tokenTypeFromChar(char c) {
   if (isLiteral(c)) return TokenType::Literal;

@@ -4,6 +4,27 @@
 
 using namespace std;
 
+bool LogicGrammarRecognizer::primaryExpression() {
+  Token t = pTokenStream.get();
+  switch (t.getType()) {
+    case TokenType::OpenParenthesis: {
+      bool v = term();
+      t = pTokenStream.get();
+      if (t.getType() != TokenType::CloseParenthesis)
+        error();
+      return v;
+    }
+    case TokenType::Literal:
+      return true;
+    case TokenType::EndOfString:
+      return false;
+    default:
+      return false;
+  }
+  error();
+  return false;
+}
+
 bool LogicGrammarRecognizer::expression() {
   bool left = primaryExpression();
   Token t = pTokenStream.get();
@@ -40,27 +61,6 @@ bool LogicGrammarRecognizer::term() {
       pTokenStream.putback(t);
       return expression();
   }
-  return false;
-}
-
-bool LogicGrammarRecognizer::primaryExpression() {
-  Token t = pTokenStream.get();
-  switch (t.getType()) {
-    case TokenType::OpenParenthesis: {
-      bool v = term();
-      t = pTokenStream.get();
-      if (t.getType() != TokenType::CloseParenthesis)
-        error();
-      return v;
-    }
-    case TokenType::Literal:
-      return true;
-    case TokenType::EndOfString:
-      return false;
-    default:
-      return false;
-  }
-  error();
   return false;
 }
 
