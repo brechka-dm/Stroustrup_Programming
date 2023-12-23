@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+ * This program is a fulfillment of exercise 3 from Chapter 6.
+ * Adding the ability to calculate factorial.
+ */
+
 const char EXIT_INSTRUCTION = 'x';
 const char ANSWER_INSTRUCTION = '=';
 const string WELCOME_STRING =
@@ -23,11 +28,16 @@ double factorial(double arg) {
   if (arg < 0)
     error("Unable to calculate factorial from \"" + to_string(arg) + "\"");
   int intArg = int(arg);
+  // We can only calculate the factorial from an integer. If arg has a
+  // fractional part, the difference will be greater than zero (we use a small
+  // number close to zero to avoid calculation accuracy errors, see
+  // Chapter 11.2.4).
   if (arg - intArg > 0.00001)
     error("Unable to calculate factorial from \"" + to_string(arg) + "\"");
 
   if (intArg == 0 || intArg == 1) return 1.0;
 
+  // Use iterations instead of recursion to calc factorial.
   double result = 1.0;
   for (int i = 1; i <= intArg; i++) {
     result *= i;
@@ -95,7 +105,7 @@ class TokenStream {
   }
 
   void putback(Token const& t) {
-    if (full) error("Token buffer is full. Unable o putback");
+    if (full) error("Token buffer is full. Unable to putback");
     buffer = t;
     full = true;
   }
