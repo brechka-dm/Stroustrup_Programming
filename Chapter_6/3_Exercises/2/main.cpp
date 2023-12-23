@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+ * This program is a fulfillment of exercise 2 from Chapter 6.
+ * Adding the ability to handle brackets {}.
+ */
+
 const char EXIT_INSTRUCTION = 'x';
 const char ANSWER_INSTRUCTION = '=';
 const string WELCOME_STRING =
@@ -73,7 +78,7 @@ class TokenStream {
   }
 
   void putback(Token const& t) {
-    if (full) error("Token buffer is full. Unable o putback");
+    if (full) error("Token buffer is full. Unable to putback");
     buffer = t;
     full = true;
   }
@@ -105,7 +110,7 @@ double primary() {
     case '8':
       return t.value;
     
-    // This case added to correctly handle 'q' instruction.
+    // This case added to correctly handle 'x' instruction.
     case EXIT_INSTRUCTION:
       ts.putback(t);
 

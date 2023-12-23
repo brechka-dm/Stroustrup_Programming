@@ -101,7 +101,7 @@ double primary() {
     case '8':
       return t.value;
     
-    // This case added to correctly handle 'q' instruction.
+    // This case added to correctly handle 'x' instruction.
     case EXIT_INSTRUCTION:
       ts.putback(t);
 
