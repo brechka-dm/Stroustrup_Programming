@@ -3,6 +3,10 @@
 
 using namespace std;
 
+/*
+ * This program is a fulfillment of tasks 2-5 from Chapter 6.
+ */
+
 const char EXIT_INSTRUCTION = 'x';
 const char ANSWER_INSTRUCTION = '=';
 const string WELCOME_STRING =
@@ -71,7 +75,7 @@ class TokenStream {
   }
 
   void putback(Token const& t) {
-    if (full) error("Token buffer is full. Unable o putback");
+    if (full) error("Token buffer is full. Unable to putback");
     buffer = t;
     full = true;
   }
