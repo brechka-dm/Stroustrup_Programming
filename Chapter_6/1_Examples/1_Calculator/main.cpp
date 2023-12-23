@@ -2,6 +2,11 @@
 
 using namespace std;
 
+/*
+ *  This program contains the calculator program code shown in the examples in
+ * Chapters 6.3-6.7. The code contains some stylistic changes and bug fixes.
+ */
+
 int main() {
   cout << "Input the expression (+, -, * and / allowed): ";
   int l_val = 0;
