@@ -2,6 +2,15 @@
 
 using namespace std;
 
+/*
+ * This program contains the version of calculator program with grammar shown in
+ * the examples in Chapters 6.3-6.7. The code contains some stylistic changes
+ * and bug fixes.
+ */
+
+/*
+ * This is analogous to the function error used in the book.
+ */
 void error(string const& message) {
   cout << message << endl;
   exit(1);
@@ -86,7 +95,7 @@ double primary() {
     }
     case '8':
       return t.value;
-    
+
     // This case added to correctly handle 'q' instruction.
     case 'q':
       ts.putback(t);
@@ -145,7 +154,7 @@ double expression() {
         return left;
     }
   }
-  
+
   // Should be unreachable. Without this return the function will not compile.
   return -1;
 }
