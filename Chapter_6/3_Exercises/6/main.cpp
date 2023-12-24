@@ -8,6 +8,13 @@
 
 using namespace std;
 
+/*
+ * This program is the solution to Exercise 6 of Chapter 6 of PROGRAMMING.
+ * Principles and Practice Using C++. 2nd edition.
+ * The program allows you to recognize simple English sentences (see Exercise 5)
+ * that end with " . "
+ */
+
 // Sets described in Chapter 21.
 set<string> conjunctions = {"and", "or", "but"};
 set<string> nouns = {"birds", "fish", "c++"};
