@@ -113,6 +113,15 @@ class TokenStream {
     buffer = t;
     full = true;
   }
+  void ignore(char c) {
+    if (full && c == buffer.kind) {
+      full = false;
+      return;
+    }
+    char ch = 0;
+    while (cin >> ch)
+      if (ch == c) return;
+  }
 
  private:
   bool full;
@@ -228,26 +237,28 @@ double expression() {
   return -1;
 }
 
+void cleanUpMess() { ts.ignore(ANSWER_INSTRUCTION); }
+
 int main() {
   double val = 0;
 
   cout << WELCOME_STRING << endl;
 
-  try {
-    while (cin) {
+  while (cin) {
+    try {
       cout << PROMPT;
       Token t = ts.get();
       while (t.kind == ANSWER_INSTRUCTION) t = ts.get();
       if (t.kind == EXIT_INSTRUCTION) return 0;
       ts.putback(t);
       cout << expression() << endl;
+    } catch (exception& e) {
+      cerr << e.what() << endl;
+      cleanUpMess();
+    } catch (...) {
+      cerr << "exception \n";
+      cleanUpMess();
     }
-  } catch (exception& e) {
-    cerr << e.what() << endl;
-    return 1;
-  } catch (...) {
-    cerr << "exception \n";
-    return 2;
   }
   return 0;
 }
