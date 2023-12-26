@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -13,6 +14,12 @@ const char EXIT_INSTRUCTION = 'x';
 // Use this const instead of print proposed in the book.
 const char ANSWER_INSTRUCTION = '=';
 const char PROMPT = '>';
+
+const char name = 'a';
+const char let = 'L';
+
+const string declkey = "let";
+
 const string WELCOME_STRING =
     "Welcome to the calculator program!\n"
     "Please enter expressions containing floating point numbers.\n"
@@ -55,9 +62,11 @@ class Token {
  public:
   char kind;
   double value;
+  string name;
 
   Token(char ch) : kind(ch), value(0.0) {}
   Token(char ch, double val) : kind(ch), value(val) {}
+  Token(char ch, string n) : kind(ch), name(n) {}
 };
 
 class TokenStream {
@@ -102,6 +111,13 @@ class TokenStream {
         return Token('8', val);
       }
       default:
+        if (isalpha(ch)) {
+          cin.putback(ch);
+          string s;
+          cin >> s;
+          if (s == declkey) return Token(let);
+          return Token(name, s);
+        }
         error("Incorrect token");
     }
 
@@ -239,6 +255,83 @@ double expression() {
 
 void cleanUpMess() { ts.ignore(ANSWER_INSTRUCTION); }
 
+class Variable {
+ public:
+  string name;
+  double value;
+  Variable(string n, double v) : name(n), value(v) {}
+};
+
+vector<Variable> varTable;
+
+double getValue(string n) {
+  for (size_t i = 0; i < varTable.size(); i++)
+    if (varTable[i].name == n) return varTable[i].value;
+  error("get: \"n\" variable is undefined");
+
+  // Default value.
+  return -1;
+}
+
+void setValue(const string& n, double v) {
+  for (size_t i = 0; i < varTable.size(); i++)
+    if (varTable[i].name == n) {
+      varTable[i].value = v;
+      return;
+    }
+  error("set: \"n\" variable is undefined");
+}
+
+bool isDeclared(string var) {
+  for (int i = 0; i < varTable.size(); ++i)
+    if (varTable[i].name == var) return true;
+  return false;
+}
+
+double defineName(string var, double val) {
+  if (isDeclared(var)) error("Variable \"var\" is declared twice");
+  varTable.push_back(Variable(var, val));
+  return val;
+}
+
+double declaration() {
+  Token t = ts.get();
+  if (t.kind != name) error("\"name\" is expected in declaration");
+  string varName = t.name;
+  Token t2 = ts.get();
+  if (t2.kind != '=') error("\"=\" missed in declaration of \"varName\"");
+  double d = expression();
+  defineName(varName, d);
+  return d;
+}
+
+double statement() {
+  Token t = ts.get();
+  switch (t.kind) {
+    case let:
+      return declaration();
+    default:
+      ts.putback(t);
+      return expression();
+  }
+}
+
+void calculate() {
+  while (cin) {
+    try {
+      cout << PROMPT;
+      Token t = ts.get();
+      while (t.kind == ANSWER_INSTRUCTION) t = ts.get();
+      if (t.kind == EXIT_INSTRUCTION) return;
+      ts.putback(t);
+      cout << ANSWER_INSTRUCTION << statement() << endl;
+    } catch (exception& e) {
+      cerr << e.what() << endl;
+      cleanUpMess();
+    }
+  }
+}
+
 int main() {
   double val = 0;
 
@@ -246,18 +339,14 @@ int main() {
 
   while (cin) {
     try {
-      cout << PROMPT;
-      Token t = ts.get();
-      while (t.kind == ANSWER_INSTRUCTION) t = ts.get();
-      if (t.kind == EXIT_INSTRUCTION) return 0;
-      ts.putback(t);
-      cout << expression() << endl;
+      calculate();
+      return 0;
     } catch (exception& e) {
       cerr << e.what() << endl;
-      cleanUpMess();
+      return 1;
     } catch (...) {
       cerr << "exception \n";
-      cleanUpMess();
+      return 2;
     }
   }
   return 0;
