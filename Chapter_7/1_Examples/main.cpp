@@ -5,18 +5,22 @@
 using namespace std;
 
 /*
- * This program is a fulfillment of exercise 3 from Chapter 6.
- * Adding the ability to calculate factorial.
+ * This program is a corrected and extended code of the examples presented in
+* Chapter 7. Additions not mentioned in the book are annotated.
+*
+* This program is an extended version of the calculator, allowing the use of
+* variables. Improved handling of errors and exceptional situations added.
  */
 
-// Use this const instead of quit proposed in the book.
-const char EXIT_INSTRUCTION = 'x';
-// Use this const instead of print proposed in the book.
-const char ANSWER_INSTRUCTION = '=';
+// Ude this const instead of "result" proposed in the book.
+const char EXIT_INSTRUCTION = 'q';
+// Use this const instead of "print" proposed in the book.
+const char ANSWER_INSTRUCTION = ';';
 const char PROMPT = '>';
-
-const char name = 'a';
-const char let = 'L';
+// Use "#" instead of "a" proposed in the book.
+const char name = '#';
+// Use "$" instead of "L" proposed in the book.
+const char let = '$';
 
 const string declkey = "let";
 
@@ -26,28 +30,25 @@ const string WELCOME_STRING =
     "You can use \"+\", \"-\", \"*\", \"/\", \"!\" and \"(\", \")\" to create "
     "expression.\n"
     "Press \"=\" to get answer.\n"
-    "Press \"x\" to exit program.";
+    "Press \"q\" to exit program.";
 
 void error(string const& message) {
   throw runtime_error(message);
   exit(1);
 }
 
-// This fuinction calculates factorial.
+// Forward declaration.
+double getValue(string n);
+
 double factorial(double arg) {
   if (arg < 0)
     error("Unable to calculate factorial from \"" + to_string(arg) + "\"");
   int intArg = int(arg);
-  // We can only calculate the factorial from an integer. If arg has a
-  // fractional part, the difference will be greater than zero (we use a small
-  // number close to zero to avoid calculation accuracy errors, see
-  // Chapter 11.2.4).
   if (arg - intArg > 0.00001)
     error("Unable to calculate factorial from \"" + to_string(arg) + "\"");
 
   if (intArg == 0 || intArg == 1) return 1.0;
 
-  // Use iterations instead of recursion to calc factorial.
   double result = 1.0;
   for (int i = 1; i <= intArg; i++) {
     result *= i;
@@ -93,6 +94,8 @@ class TokenStream {
       case '}':
       case '!':
       case '%':
+      // To be able to assign values to variables.
+      case '=':
         return Token(ch);
       case '.':
       case '0':
@@ -112,9 +115,10 @@ class TokenStream {
       }
       default:
         if (isalpha(ch)) {
-          cin.putback(ch);
           string s;
-          cin >> s;
+          s += ch;
+          while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch;
+          cin.putback(ch);
           if (s == declkey) return Token(let);
           return Token(name, s);
         }
@@ -169,8 +173,11 @@ double primary() {
       return -primary();
     case '+':
       return primary();
+    // To get variable value
+    case name:
+      return getValue(t.name);
 
-    // This case added to correctly handle 'x' instruction.
+      // This case added to correctly handle 'q' instruction.
     case EXIT_INSTRUCTION:
       ts.putback(t);
 
@@ -289,7 +296,7 @@ bool isDeclared(string var) {
 }
 
 double defineName(string var, double val) {
-  if (isDeclared(var)) error("Variable \"var\" is declared twice");
+  if (isDeclared(var)) error("Variable \"" + var + "\" is declared twice");
   varTable.push_back(Variable(var, val));
   return val;
 }
@@ -324,7 +331,7 @@ void calculate() {
       while (t.kind == ANSWER_INSTRUCTION) t = ts.get();
       if (t.kind == EXIT_INSTRUCTION) return;
       ts.putback(t);
-      cout << ANSWER_INSTRUCTION << statement() << endl;
+      cout << "=" << statement() << endl;
     } catch (exception& e) {
       cerr << e.what() << endl;
       cleanUpMess();
@@ -339,6 +346,8 @@ int main() {
 
   while (cin) {
     try {
+      defineName("pi", 3.1415926535);
+      defineName("e", 2.7182818284);
       calculate();
       return 0;
     } catch (exception& e) {
