@@ -1,3 +1,5 @@
+#include "Token.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -59,94 +61,7 @@ double factorial(double arg) {
   return result;
 }
 
-class Token {
- public:
-  char kind;
-  double value;
-  string name;
 
-  Token(char ch) : kind(ch), value(0.0) {}
-  Token(char ch, double val) : kind(ch), value(val) {}
-  Token(char ch, string n) : kind(ch), name(n) {}
-};
-
-class TokenStream {
- public:
-  TokenStream() : full(false), buffer(0) {}
-  Token get() {
-    if (full) {
-      full = false;
-      return buffer;
-    }
-
-    char ch;
-    cin >> ch;
-    switch (ch) {
-      case ANSWER_INSTRUCTION:
-      case EXIT_INSTRUCTION:
-      case '(':
-      case ')':
-      case '+':
-      case '-':
-      case '*':
-      case '/':
-      case '{':
-      case '}':
-      case '!':
-      case '%':
-      // To be able to assign values to variables.
-      case '=':
-        return Token(ch);
-      case '.':
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9': {
-        cin.putback(ch);
-        double val;
-        cin >> val;
-        return Token('8', val);
-      }
-      default:
-        if (isalpha(ch)) {
-          string s;
-          s += ch;
-          while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch;
-          cin.putback(ch);
-          if (s == declkey) return Token(let);
-          return Token(name, s);
-        }
-        error("Incorrect token");
-    }
-
-    return Token('0');
-  }
-
-  void putback(Token const& t) {
-    if (full) error("Token buffer is full. Unable to putback");
-    buffer = t;
-    full = true;
-  }
-  void ignore(char c) {
-    if (full && c == buffer.kind) {
-      full = false;
-      return;
-    }
-    char ch = 0;
-    while (cin >> ch)
-      if (ch == c) return;
-  }
-
- private:
-  bool full;
-  Token buffer;
-};
 
 TokenStream ts;
 
