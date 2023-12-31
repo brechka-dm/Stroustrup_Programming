@@ -8,17 +8,13 @@
 #include "Error.h"
 
 using std::cin;
-using std::itoa;
+using std::iota;
 using std::string;
 using std::unordered_set;
 
 namespace {
 const char prompt = '>';
 const char answerInstructionType = ';';
-const char exitInstructionType = '`';
-const char varNameType = '@';
-const char varDefineType = '$';
-const char numberType = '#';
 
 const string varDefineKey = "let";
 const string exitKey = "quit";
@@ -48,19 +44,6 @@ bool isAllowedTokenType(char c) {
 bool isNumberToken(char c) { return numberChars.find(c) != numberChars.end(); }
 }  // namespace
 
-Token TokenStream::returnBufer() {
-  pFull = false;
-  return pBuffer;
-}
-
-Token TokenStream::returnNewToken() {
-  char ch;
-  cin >> ch;
-  return isAllowedTokenType(ch) ? Token(ch)
-         : isNumberToken(ch)    ? getNumberToken(ch)
-                                : getVarToken(ch);
-}
-
 Token TokenStream::getNumberToken(char c) {
   cin.putback(c);
   double val;
@@ -80,3 +63,19 @@ Token TokenStream::getVarToken(char c) {
 TokenStream::TokenStream() : pFull(false), pBuffer(0) {}
 
 Token TokenStream::get() { return pFull ? returnBufer() : returnNewToken(); }
+
+void TokenStream::putback(Token const& t) {
+  if (pFull) error("Token buffer is full. Unable to putback");
+  pBuffer = t;
+  pFull = true;
+}
+
+void TokenStream::ignore(char c) {
+  if (pFull && c == pBuffer.getKind()) {
+    pFull = false;
+    return;
+  }
+  char ch = 0;
+  while (cin >> ch)
+    if (ch == c) return;
+}

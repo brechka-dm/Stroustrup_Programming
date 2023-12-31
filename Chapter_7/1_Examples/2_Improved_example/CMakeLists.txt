@@ -11,6 +11,7 @@ add_executable(Calculator
                         main.cpp
                         Token.cpp
                         Token.h
+                        TokenKinds.h
                         TokenStream.cpp
                         TokenStream.h)
 target_compile_features(Calculator PUBLIC cxx_std_20)
