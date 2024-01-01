@@ -13,16 +13,16 @@ using std::string;
 using std::unordered_set;
 
 namespace {
-const char prompt = '>';
-const char answerInstructionType = ';';
-
 const string varDefineKey = "let";
 const string exitKey = "quit";
 
-const unordered_set<char> brackets{'(', ')', '{', '}'};
-const unordered_set<char> operations{'+', '-', '*', '/', '!', '%'};
-const unordered_set<char> instructions{answerInstructionType,
-                                       exitInstructionType};
+const unordered_set<TokenKind> brackets{
+    TokenKind::openParentesis, TokenKind::closeParentesis,
+    TokenKind::openBracket, TokenKind::closeBracket};
+const unordered_set<TokenKind> operations{
+    TokenKind::plus,   TokenKind::minus,     TokenKind::multiply,
+    TokenKind::divide, TokenKind::factorial, TokenKind::reminder};
+const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit};
 
 const unordered_set<char> generateNumberChars() {
   unordered_set<char> result(10);
@@ -33,10 +33,10 @@ const unordered_set<char> generateNumberChars() {
 
 const unordered_set<char> numberChars(generateNumberChars());
 
-bool isAllowedTokenType(char c) {
-  return brackets.find(c) == brackets.end() &&
-                 operations.find(c) == operations.end() &&
-                 instructions.find(c) == instructions.end()
+bool isAllowedTokenType(TokenKind kind) {
+  return brackets.find(kind) == brackets.end() &&
+                 operations.find(kind) == operations.end() &&
+                 instructions.find(kind) == instructions.end()
              ? false
              : true;
 }
@@ -44,23 +44,38 @@ bool isAllowedTokenType(char c) {
 bool isNumberToken(char c) { return numberChars.find(c) != numberChars.end(); }
 }  // namespace
 
-Token TokenStream::getNumberToken(char c) {
+Token TokenStream::returnBufer() {
+  pFull = false;
+  return pBuffer;
+}
+
+Token TokenStream::returnNewToken() const {
+  char ch;
+  cin >> ch;
+  const TokenKind kind = charToTokenKind(ch);
+  return isAllowedTokenType(kind) ? Token(kind)
+         : isNumberToken(ch)      ? getNumberToken(ch)
+                                  : getVarToken(ch);
+}
+
+Token TokenStream::getNumberToken(char c) const {
   cin.putback(c);
   double val;
   cin >> val;
-  return Token(numberType, val);
+  return Token(TokenKind::number, val);
 }
 
-Token TokenStream::getVarToken(char c) {
+Token TokenStream::getVarToken(char c) const {
   if (!isalpha(c)) error("Incorrect token");
   string s;
   s += c;
   while (cin.get(c) && (isalpha(c) || isdigit(c))) s += c;
   cin.putback(c);
-  return s == varDefineKey ? Token(varDefineType) : Token(varNameType, s);
+  return s == varDefineKey ? Token(TokenKind::varDefine)
+                           : Token(TokenKind::varName, s);
 }
 
-TokenStream::TokenStream() : pFull(false), pBuffer(0) {}
+TokenStream::TokenStream() : pFull(false), pBuffer(TokenKind::exit) {}
 
 Token TokenStream::get() { return pFull ? returnBufer() : returnNewToken(); }
 
@@ -71,7 +86,8 @@ void TokenStream::putback(Token const& t) {
 }
 
 void TokenStream::ignore(char c) {
-  if (pFull && c == pBuffer.getKind()) {
+  const char bufferChar = kindToChar(pBuffer.getKind());
+  if (pFull && c == bufferChar) {
     pFull = false;
     return;
   }

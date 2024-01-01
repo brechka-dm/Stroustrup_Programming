@@ -9,9 +9,8 @@ add_executable(Calculator
                         Grammar.cpp
                         Grammar.h
                         main.cpp
-                        Token.cpp
                         Token.h
-                        TokenKinds.h
+                        TokenKind.h
                         TokenStream.cpp
                         TokenStream.h)
 target_compile_features(Calculator PUBLIC cxx_std_20)

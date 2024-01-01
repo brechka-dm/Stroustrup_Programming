@@ -6,34 +6,19 @@
 
 using std::cin;
 
-template <typename T>
 class TokenStream {
   bool pFull = false;
-  Token<T> pBuffer;
+  Token pBuffer;
 
-  Token<T> returnBufer() const {
-    pFull = false;
-    return pBuffer;
-  }
+  Token returnBufer();
 
-  Token<T> returnNewToken() const {
-    char ch;
-    cin >> ch;
-    return isAllowedTokenType(ch) ? Token(ch)
-           : isNumberToken(ch)    ? getNumberToken(ch)
-                                  : getVarToken(ch);
-  }
-  Token<T> getNumberToken(char c) {
-    cin.putback(c);
-    double val;
-    cin >> val;
-    return Token<T>(numberType, val);
-  }
-  Token<T> getVarToken(char c);
+  Token returnNewToken() const;
+  Token getNumberToken(char c) const;
+  Token getVarToken(char c) const;
 
  public:
   TokenStream();
-  Token<T> get();
-  void putback(Token<T> const& t);
+  Token get();
+  void putback(Token const& t);
   void ignore(char c);
 };

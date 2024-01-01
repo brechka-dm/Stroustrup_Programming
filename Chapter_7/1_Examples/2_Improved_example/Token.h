@@ -1,19 +1,20 @@
 #pragma once
 
+#include "TokenKind.h"
+
 #include <string>
 
-template<typename T>
 class Token {
   std::string pName;
-  T pValue{};
-  char pKind{0};
+  double pValue{0.0};
+  TokenKind pKind{0};
 
  public:
-  Token(char ch) : pValue{}, pKind(ch) {}
-  Token(char ch, double val) : pValue(val), pKind(ch) {}
-  Token(char ch, std::string n) : pName(n), pValue{}, pKind(ch) {}
+  Token(TokenKind kind) : pValue{0.0}, pKind(kind) {}
+  Token(TokenKind kind, double val) : pValue(val), pKind(kind) {}
+  Token(TokenKind kind, std::string n) : pName(n), pValue{0.0}, pKind(kind) {}
 
-  char getKind() const { return pKind; }
-  T getValue() const { return pValue; }
+  TokenKind getKind() const { return pKind; }
+  double getValue() const { return pValue; }
   const std::string& getName() const { return pName; }
 };

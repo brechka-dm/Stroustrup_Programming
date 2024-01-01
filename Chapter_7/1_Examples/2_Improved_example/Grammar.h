@@ -1,27 +1,34 @@
 #pragma once
 
+#include <string>
+
 #include "TokenStream.h"
 
-#include <string>
-#include <unordered_map>
-
 class Grammar {
-std::unordered_map<std::string, double> varTable;
-TokenStream pTokenStream;
+  TokenStream pTokenStream;
 
-double getValue(const std::string& n);
-double factorial(double arg);
-double expression();
-double primary();
-double handleParentesis(char closeParentesisType);
-double factorialTerm();
-double term();
-void cleanUpMess();
-double getVarValue(const std::string& varName);
-void setVarValue(const std::string& varName, double varValue);
-bool isVarDeclared(const std::string& varName);
-double defineVar(const std::string& varName, double varValue);
+  double statement();
+  double declaration();
+  double expression();
+  double term();
+  double factorialTerm();
+  double primary();
+  double handleParentesis(TokenKind closeParentesisKind);
+  
+  double getValue(const std::string& n);
+  double factorial(double arg);
 
-public:
-Grammar();
+  
+  
+  
+
+  void cleanUpMess();
+  double getVarValue(const std::string& varName);
+  void setVarValue(const std::string& varName, double varValue);
+  bool isVarDeclared(const std::string& varName);
+
+ public:
+  Grammar();
+  void inputText();
+  double defineVar(const std::string& varName, double varValue);
 };
