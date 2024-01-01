@@ -25,8 +25,8 @@ const unordered_set<TokenKind> operations{
 const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit};
 
 const unordered_set<char> generateNumberChars() {
-  unordered_set<char> result(10);
-  iota(result.begin(), result.end(), 0);
+  unordered_set<char> result;
+  for (char c = '0'; c <= '9'; c++) result.insert(c);
   result.insert('.');
   return result;
 }

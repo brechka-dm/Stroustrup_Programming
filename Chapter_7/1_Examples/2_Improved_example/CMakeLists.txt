@@ -6,8 +6,6 @@ add_executable(Calculator
                         Calculator.cpp
                         Calculator.h
                         Error.h
-                        Grammar.cpp
-                        Grammar.h
                         main.cpp
                         Token.h
                         TokenKind.h
