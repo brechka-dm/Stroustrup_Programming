@@ -7,7 +7,7 @@
 class Token {
   std::string pName;
   double pValue{0.0};
-  TokenKind pKind{0};
+  TokenKind pKind{TokenKind::exit};
 
  public:
   Token(TokenKind kind) : pValue{0.0}, pKind(kind) {}

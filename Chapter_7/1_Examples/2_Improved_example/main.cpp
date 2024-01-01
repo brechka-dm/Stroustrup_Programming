@@ -21,8 +21,8 @@ int main() {
   Calculator calculator;
   while (cin) {
     try {
-      calculator.defineVar("pi", 3.1415926535);
-      calculator.defineVar("e", 2.7182818284);
+      //calculator.defineVar("pi", 3.1415926535);
+      //calculator.defineVar("e", 2.7182818284);
       calculator.calculate();
       return 0;
     } catch (std::exception& e) {
