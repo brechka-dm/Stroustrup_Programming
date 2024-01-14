@@ -22,16 +22,8 @@ const unordered_set<TokenKind> brackets{
 const unordered_set<TokenKind> operations{
     TokenKind::plus,   TokenKind::minus,     TokenKind::multiply,
     TokenKind::divide, TokenKind::factorial, TokenKind::reminder};
-const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit};
-
-const unordered_set<char> generateNumberChars() {
-  unordered_set<char> result;
-  for (char c = '0'; c <= '9'; c++) result.insert(c);
-  result.insert('.');
-  return result;
-}
-
-const unordered_set<char> numberChars(generateNumberChars());
+const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit,
+                                            TokenKind::assignment};
 
 bool isAllowedTokenType(TokenKind kind) {
   return brackets.find(kind) == brackets.end() &&
@@ -40,8 +32,6 @@ bool isAllowedTokenType(TokenKind kind) {
              ? false
              : true;
 }
-
-bool isNumberToken(char c) { return numberChars.find(c) != numberChars.end(); }
 }  // namespace
 
 Token TokenStream::returnBufer() {
@@ -54,7 +44,7 @@ Token TokenStream::returnNewToken() const {
   cin >> ch;
   const TokenKind kind = charToTokenKind(ch);
   return isAllowedTokenType(kind) ? Token(kind)
-         : isNumberToken(ch)      ? getNumberToken(ch)
+         : isNumber(ch)           ? getNumberToken(ch)
                                   : getVarToken(ch);
 }
 

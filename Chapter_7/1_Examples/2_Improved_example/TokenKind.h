@@ -16,12 +16,15 @@ enum class TokenKind {
   divide = '/',
   factorial = '!',
   reminder = '%',
-  assignment = '='
+  assignment = '=',
+  alphanumeric = 'a'
 };
-
-inline char kindToChar(TokenKind kind) { return static_cast<char>(kind); }
+inline bool isNumber(char c) { return c >= '0' && c <= '9' || c == '.'; }
+inline char kindToChar(TokenKind kind) { 
+  return static_cast<char>(kind); }
 inline TokenKind charToTokenKind(char c) {
   switch (c) {
+    case 'q':
     case '`':
       return TokenKind::exit;
     case ';':
@@ -55,8 +58,7 @@ inline TokenKind charToTokenKind(char c) {
     case '=':
       return TokenKind::assignment;
   }
-  // Handle unknown characters or return a special value for such cases
-  // For example, you can return TokenKind::unknown or throw an exception.
-  // In this example, I'll return TokenKind::exit for unknown characters.
-  return TokenKind::exit;
+  if (isNumber(c)) return TokenKind::number;
+
+  return TokenKind::alphanumeric;
 }

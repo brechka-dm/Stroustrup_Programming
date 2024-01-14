@@ -34,7 +34,7 @@ double factorial(double arg) {
   }
   return result;
 }
-}
+}  // namespace
 
 double Calculator::statement() {
   Token t = pTokenStream.get();
@@ -104,22 +104,21 @@ double Calculator::term() {
         if (i2 == 0) error("Division by zero");
         left = i1 % i2;
         t = pTokenStream.get();
+        return left;
         break;
       }
       default:
         pTokenStream.putback(t);
         return left;
     }
-
-    return -1;
   }
+  return -1;
 }
 double Calculator::factorialTerm() {
-  double left = primary();
   Token t = pTokenStream.get();
-  if (t.getKind() == TokenKind::factorial) return factorial(left);
+  if (t.getKind() == TokenKind::factorial) return factorial(primary());
   pTokenStream.putback(t);
-  return left;
+  return primary();
 }
 double Calculator::primary() {
   Token t = pTokenStream.get();
@@ -159,17 +158,18 @@ double Calculator::getVarValue(const std::string& varName) {
     error("get: \"" + varName + "\" variable is undefined");
   return pVarTable[varName];
 }
-void Calculator::cleanUpMess() { pTokenStream.ignore(kindToChar(TokenKind::answer)); }
+void Calculator::cleanUpMess() {
+  pTokenStream.ignore(kindToChar(TokenKind::answer));
+}
 void Calculator::setVarValue(const std::string& varName, double varValue) {
   if (isVarDeclared(varName)) pVarTable[varName] = varValue;
 
   error("set: \"" + varName + "\" variable is undefined");
 }
-bool Calculator::isVarDeclared(const std::string& varName){
+bool Calculator::isVarDeclared(const std::string& varName) {
   return pVarTable.find(varName) != pVarTable.end();
 }
-Calculator::Calculator()
-    : pTokenStream() {}
+Calculator::Calculator() : pTokenStream() {}
 void Calculator::calculate() {
   while (cin) {
     try {
