@@ -16,6 +16,9 @@ using std::to_string;
 namespace {
 const char prompt = '>';
 
+// Calculates factorial from arg.
+// If arg < 0 or arg is fractional throws error.
+// Also throws error in case of result type overflow.
 double factorial(double arg) {
   if (arg < 0)
     error("Unable to calculate factorial from \"" + to_string(arg) + "\"");
@@ -51,8 +54,8 @@ double Calculator::declaration() {
   if (t.getKind() != TokenKind::varName)
     error("\"name\" is expected in declaration");
   string varName = t.getName();
-  Token t2 = pTokenStream.get();
-  if (t2.getKind() != TokenKind::assignment)
+  t = pTokenStream.get();
+  if (t.getKind() != TokenKind::assignment)
     error("\"=\" missed in declaration of \"varName\"");
   double d = expression();
   defineVar(varName, d);
@@ -61,6 +64,8 @@ double Calculator::declaration() {
 double Calculator::expression() {
   double left = term();
   Token t = pTokenStream.get();
+
+  // Using while to be able to handle expressions of the form x+y-z...
   while (true) switch (t.getKind()) {
       case TokenKind::plus:
         left += term();
@@ -82,6 +87,8 @@ double Calculator::expression() {
 double Calculator::term() {
   double left = factorialTerm();
   Token t = pTokenStream.get();
+
+  // Using while to be able to handle expressions of the form x*y/z...
   while (true) {
     switch (t.getKind()) {
       case TokenKind::multiply:
@@ -163,7 +170,6 @@ void Calculator::cleanUpMess() {
 }
 void Calculator::setVarValue(const std::string& varName, double varValue) {
   if (isVarDeclared(varName)) pVarTable[varName] = varValue;
-
   error("set: \"" + varName + "\" variable is undefined");
 }
 bool Calculator::isVarDeclared(const std::string& varName) {
@@ -172,6 +178,7 @@ bool Calculator::isVarDeclared(const std::string& varName) {
 Calculator::Calculator() : pTokenStream() {}
 void Calculator::calculate() {
   while (cin) {
+    // Using try... catch to handle exceptions manualy.
     try {
       cout << prompt;
       Token t = pTokenStream.get();
@@ -185,9 +192,8 @@ void Calculator::calculate() {
     }
   }
 }
-double Calculator::defineVar(const std::string& varName, double varValue) {
+void Calculator::defineVar(const std::string& varName, double varValue) {
   if (isVarDeclared(varName))
     error("Variable \"" + varName + "\" is declared twice");
   pVarTable[varName] = varValue;
-  return varValue;
 }

@@ -2,6 +2,12 @@
 
 #include "Calculator.h"
 
+/*
+ * This program is improved implementation of the Calculator presented in
+ * Chapter 7. In this implementation, individual program components are placed
+ * in separate files.
+ */
+
 using std::cerr;
 using std::cin;
 using std::cout;
@@ -13,11 +19,13 @@ const string welcomeString =
     "Please enter expressions containing floating point numbers.\n"
     "You can use \"+\", \"-\", \"*\", \"/\", \"!\" and \"(\", \")\" to create "
     "expression.\n"
-    "Press \"=\" to get answer.\n"
+    "Press \";\" to get answer.\n"
     "Press \"q\" to exit program.";
 
 int main() {
   cout << welcomeString << endl;
+
+  // The calculator is implemented as a separate class.
   Calculator calculator;
   while (cin) {
     try {

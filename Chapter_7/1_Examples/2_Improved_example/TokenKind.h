@@ -1,5 +1,8 @@
 #pragma once
 
+/*
+ * Allowable token types.
+ */
 enum class TokenKind {
   exit = '`',
   answer = ';',
@@ -17,11 +20,24 @@ enum class TokenKind {
   factorial = '!',
   reminder = '%',
   assignment = '=',
+
+  // Used to indicate unknown token kind.
   alphanumeric = 'a'
 };
+
+/*
+ * Returns true if c is a number.
+ */
 inline bool isNumber(char c) { return c >= '0' && c <= '9' || c == '.'; }
-inline char kindToChar(TokenKind kind) { 
-  return static_cast<char>(kind); }
+
+/*
+ * Convets TokenKind to its char representation.
+ */
+inline char kindToChar(TokenKind kind) { return static_cast<char>(kind); }
+
+/*
+ * Converts c to TokenKind.
+ */
 inline TokenKind charToTokenKind(char c) {
   switch (c) {
     case 'q':
