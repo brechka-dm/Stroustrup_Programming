@@ -121,12 +121,32 @@ double Calculator::term() {
         break;
       }
       case TokenKind::sqrt:
+        t = pTokenStream.get();
+        if (t.getKind() != TokenKind::openParentesis)
+          error("Error in \"sqrt\": \"(\" expected");
         left = calcSqrt(primary());
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::closeParentesis)
           error("Error in \"sqrt\": \")\" expected");
         t = pTokenStream.get();
         break;
+      case TokenKind::pow: {
+        t = pTokenStream.get();
+        if (t.getKind() != TokenKind::openParentesis)
+          error("Error in \"pow\": \"(\" expected");
+        double num{primary()};
+        t = pTokenStream.get();
+        if (t.getKind() != TokenKind::comma)
+          error("Error in \"pow\": \",\" expected");
+        double deg{primary()};
+        int intDeg = static_cast<int>(deg);
+        if (deg != intDeg) error("Error in \"pow\": degree should be integer");
+        left = pow(num, deg);
+        if (t.getKind() != TokenKind::closeParentesis)
+          error("Error in \"pow\": \")\" expected");
+        t = pTokenStream.get();
+        break;
+      }
       default:
         pTokenStream.putback(t);
         return left;
@@ -157,6 +177,12 @@ double Calculator::primary() {
       return getVarValue(t.getName());
     case TokenKind::exit:
       pTokenStream.putback(t);
+    case TokenKind::sqrt:
+      pTokenStream.putback(t);
+      break;
+    case TokenKind::pow:
+      pTokenStream.putback(t);
+      break;
     default:
       error("Ptimary expression expected");
   }

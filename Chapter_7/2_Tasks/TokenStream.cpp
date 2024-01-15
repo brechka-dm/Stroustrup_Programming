@@ -15,7 +15,8 @@ using std::unordered_set;
 namespace {
 const string varDefineKey = "let";
 const string exitKey = "quit";
-const string sqrtKey = "sqrt(";
+const string sqrtKey = "sqrt";
+const string powKey = "pow";
 
 const unordered_set<TokenKind> brackets{
     TokenKind::openParentesis, TokenKind::closeParentesis,
@@ -24,7 +25,8 @@ const unordered_set<TokenKind> operations{
     TokenKind::plus,   TokenKind::minus,     TokenKind::multiply,
     TokenKind::divide, TokenKind::factorial, TokenKind::reminder};
 const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit,
-                                            TokenKind::assignment};
+                                            TokenKind::assignment,
+                                            TokenKind::comma};
 
 bool isAllowedTokenType(TokenKind kind) {
   return brackets.find(kind) == brackets.end() &&
@@ -64,6 +66,7 @@ Token TokenStream::getAlphanumericToken(char c) const {
   cin.putback(c);
   return s == varDefineKey ? Token(TokenKind::varDefine)
          : s == sqrtKey    ? Token(TokenKind::sqrt)
+         : s == powKey     ? Token(TokenKind::pow)
                            : Token(TokenKind::varName, s);
 }
 

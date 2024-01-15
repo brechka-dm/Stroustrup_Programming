@@ -20,9 +20,10 @@ enum class TokenKind {
   factorial = '!',
   reminder = '%',
   assignment = '=',
-  
+
   sqrt = 's',
   pow = 'p',
+  comma = ',',
 
   // Used to indicate unknown token kind.
   alphanumeric = 'a'
@@ -76,6 +77,8 @@ inline TokenKind charToTokenKind(char c) {
       return TokenKind::reminder;
     case '=':
       return TokenKind::assignment;
+    case ',':
+      return TokenKind::comma;
   }
   if (isNumber(c)) return TokenKind::number;
 
