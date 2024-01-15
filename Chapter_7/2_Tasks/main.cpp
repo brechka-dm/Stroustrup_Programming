@@ -14,18 +14,17 @@ using std::cout;
 using std::endl;
 using std::string;
 
-const string welcomeString =
-    "Welcome to the calculator program!\n"
-    "Please enter expressions containing floating point numbers.\n"
-    "You can use \"+\", \"-\", \"*\", \"/\", \"!\" and \"(\", \")\" to create "
-    "expression.\n"
-    "Press \";\" to get answer.\n"
-    "Press \"q\" to exit program.";
+const string welcomeString{R"'(Welcome to the calculator program!
+Please enter expressions containing floating point numbers.
+You can use next operations to create expressions: 
+"+", "-", "*", "/", "!", "{", "}" "(", ")" and functions sqrt() and pow().
+Also you can define variables:
+# x=6 
+Type ";" to get answer.
+Type "exit" to quit.)'"};
 
 int main() {
   cout << welcomeString << endl;
-
-  // The calculator is implemented as a separate class.
   Calculator calculator;
   while (cin) {
     try {

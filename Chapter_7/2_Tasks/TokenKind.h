@@ -44,7 +44,6 @@ inline char kindToChar(TokenKind kind) { return static_cast<char>(kind); }
  */
 inline TokenKind charToTokenKind(char c) {
   switch (c) {
-    case 'q':
     case '`':
       return TokenKind::exit;
     case ';':

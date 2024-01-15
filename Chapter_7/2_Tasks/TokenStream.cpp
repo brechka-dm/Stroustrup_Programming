@@ -13,8 +13,8 @@ using std::string;
 using std::unordered_set;
 
 namespace {
-const string varDefineKey = "let";
-const string exitKey = "quit";
+const string varDefineKey = "#";
+const string exitKey = "exit";
 const string sqrtKey = "sqrt";
 const string powKey = "pow";
 
@@ -59,7 +59,7 @@ Token TokenStream::getNumberToken(char c) const {
 }
 
 Token TokenStream::getAlphanumericToken(char c) const {
-  if (!isalpha(c)) error("Incorrect token");
+  if (!isalpha(c) && c != '#') error("Incorrect token");
   string s;
   s += c;
   while (cin.get(c) && (isalpha(c) || isdigit(c))) s += c;
@@ -67,6 +67,7 @@ Token TokenStream::getAlphanumericToken(char c) const {
   return s == varDefineKey ? Token(TokenKind::varDefine)
          : s == sqrtKey    ? Token(TokenKind::sqrt)
          : s == powKey     ? Token(TokenKind::pow)
+         : s == exitKey    ? Token(TokenKind::exit)
                            : Token(TokenKind::varName, s);
 }
 

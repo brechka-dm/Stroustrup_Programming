@@ -8,6 +8,7 @@ add_executable(Calculator
                         Error.h
                         main.cpp
                         Token.h
+                        TokenKind.cpp
                         TokenKind.h
                         TokenStream.cpp
                         TokenStream.h)
