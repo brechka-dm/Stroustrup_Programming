@@ -134,14 +134,15 @@ double Calculator::term() {
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::openParentesis)
           error("Error in \"pow\": \"(\" expected");
-        double num{primary()};
+        double num{expression()};
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::comma)
           error("Error in \"pow\": \",\" expected");
-        double deg{primary()};
+        double deg{expression()};
         int intDeg = static_cast<int>(deg);
         if (deg != intDeg) error("Error in \"pow\": degree should be integer");
         left = pow(num, deg);
+        t = pTokenStream.get();
         if (t.getKind() != TokenKind::closeParentesis)
           error("Error in \"pow\": \")\" expected");
         t = pTokenStream.get();
