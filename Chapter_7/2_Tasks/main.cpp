@@ -14,6 +14,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
+// Using raw string, see https://en.cppreference.com/w/cpp/language/string_literal
 const string welcomeString{R"'(Welcome to the calculator program!
 Please enter expressions containing floating point numbers.
 You can use next operations to create expressions: 

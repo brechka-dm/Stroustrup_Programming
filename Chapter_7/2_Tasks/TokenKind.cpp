@@ -38,6 +38,9 @@ const vector<TokenKindValue> tokenKinds{
 }  // namespace
 
 std::string kindToString(TokenKind kind) {
+  // Using std::find_if see chapter 21.3.
+  // Using lambda-function as argument, see
+  // https://en.cppreference.com/w/cpp/language/lambda
   const auto iter = find_if(
       tokenKinds.begin(), tokenKinds.end(),
       [kind](const TokenKindValue& record) { return record.kind == kind; });
