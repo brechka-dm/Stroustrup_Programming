@@ -13,8 +13,10 @@ using std::string;
 using std::unordered_set;
 
 namespace {
-const string varDefineKey = "#";
-const string exitKey = "exit";
+const string varDefineKey =
+    "#";  // Keyword changed from "let" to "#" according to task 11.
+const string exitKey =
+    "exit";  // Keyword changed from "q" to "exit" according to task 12.
 const string sqrtKey = "sqrt";
 const string powKey = "pow";
 
@@ -22,8 +24,8 @@ const unordered_set<TokenKind> brackets{
     TokenKind::openParentesis, TokenKind::closeParentesis,
     TokenKind::openBracket, TokenKind::closeBracket};
 const unordered_set<TokenKind> operations{
-    TokenKind::plus,   TokenKind::minus,     TokenKind::multiply,
-    TokenKind::divide, TokenKind::factorial, TokenKind::reminder};
+    TokenKind::plus,     TokenKind::minus,     TokenKind::multiply,
+    TokenKind::division, TokenKind::factorial, TokenKind::reminder};
 const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit,
                                             TokenKind::assignment,
                                             TokenKind::comma};
@@ -82,8 +84,8 @@ void TokenStream::putback(Token const& t) {
 }
 
 void TokenStream::ignore(char c) {
-  const char bufferChar = kindToChar(pBuffer.getKind());
-  if (pFull && c == bufferChar) {
+  const std::string bufferString = kindToString(pBuffer.getKind());
+  if (pFull && c == bufferString[0]) {
     pFull = false;
     return;
   }

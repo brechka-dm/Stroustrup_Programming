@@ -39,6 +39,10 @@ double factorial(double arg) {
   return result;
 }
 
+/*
+ * Calculates square root using standart function sqrt.
+ * Throws error if x is negative.
+ */
 double calcSqrt(double x) {
   if (x < 0) error("Unable to calc square root from \"" + to_string(x) + "\"");
   return sqrt(x);
@@ -101,7 +105,7 @@ double Calculator::term() {
         left *= factorialTerm();
         t = pTokenStream.get();
         break;
-      case TokenKind::divide: {
+      case TokenKind::division: {
         double d = factorialTerm();
         if (d == 0) error("Division by zero");
         left /= d;
@@ -120,7 +124,8 @@ double Calculator::term() {
         return left;
         break;
       }
-      case TokenKind::sqrt:
+      case TokenKind::sqrt:  // Calculating the sqrt function according to
+                             // task 7.
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::openParentesis)
           error("Error in \"sqrt\": \"(\" expected");
@@ -130,7 +135,8 @@ double Calculator::term() {
           error("Error in \"sqrt\": \")\" expected");
         t = pTokenStream.get();
         break;
-      case TokenKind::pow: {
+      case TokenKind::pow: {  // Calculating the sqrt function according to
+                              // task 10.
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::openParentesis)
           error("Error in \"pow\": \"(\" expected");
@@ -178,10 +184,10 @@ double Calculator::primary() {
       return getVarValue(t.getName());
     case TokenKind::exit:
       pTokenStream.putback(t);
-    case TokenKind::sqrt:
+    case TokenKind::sqrt:  // Calculating the sqrt function according to task 7.
       pTokenStream.putback(t);
       break;
-    case TokenKind::pow:
+    case TokenKind::pow:  // Calculating the sqrt function according to task 10.
       pTokenStream.putback(t);
       break;
     default:
@@ -194,7 +200,7 @@ double Calculator::handleParentesis(TokenKind closeParentesisKind) {
   Token t = pTokenStream.get();
   if (t.getKind() != closeParentesisKind) {
     string errorMsg = "Invalid expression: \'";
-    errorMsg += kindToChar(closeParentesisKind);
+    errorMsg += kindToString(closeParentesisKind);
     errorMsg += "\' expected";
     error(errorMsg);
   }
@@ -206,7 +212,7 @@ double Calculator::getVarValue(const std::string& varName) {
   return pVarTable[varName];
 }
 void Calculator::cleanUpMess() {
-  pTokenStream.ignore(kindToChar(TokenKind::answer));
+  pTokenStream.ignore(kindToString(TokenKind::answer)[0]);
 }
 void Calculator::setVarValue(const std::string& varName, double varValue) {
   if (isVarDeclared(varName)) pVarTable[varName] = varValue;
