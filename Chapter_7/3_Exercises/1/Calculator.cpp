@@ -17,9 +17,6 @@ using std::to_string;
 namespace {
 const char prompt = '>';
 
-// Calculates factorial from arg.
-// If arg < 0 or arg is fractional throws error.
-// Also throws error in case of result type overflow.
 double factorial(double arg) {
   if (arg < 0)
     error("Unable to calculate factorial from \"" + to_string(arg) + "\"");
@@ -39,10 +36,6 @@ double factorial(double arg) {
   return result;
 }
 
-/*
- * Calculates square root using standart function sqrt.
- * Throws error if x is negative.
- */
 double calcSqrt(double x) {
   if (x < 0) error("Unable to calc square root from \"" + to_string(x) + "\"");
   return sqrt(x);
@@ -54,28 +47,29 @@ double Calculator::statement() {
   switch (t.getKind()) {
     case TokenKind::varDefine:
       return declaration();
+    case TokenKind::constDefine:  // Constant definition.
+      return declaration(true);
     default:
       pTokenStream.putback(t);
       return expression();
   }
 }
-double Calculator::declaration() {
+double Calculator::declaration(bool isConst) {
   Token t = pTokenStream.get();
   if (t.getKind() != TokenKind::varName)
     error("\"name\" is expected in declaration");
   string varName = t.getName();
   t = pTokenStream.get();
   if (t.getKind() != TokenKind::assignment)
-    error("\"=\" missed in declaration of \"varName\"");
+    error("\"=\" missed in declaration of \"" + varName + "\"");
   double d = expression();
-  defineVar(varName, d);
+  defineVar(varName, d, isConst);
   return d;
 }
 double Calculator::expression() {
   double left = term();
   Token t = pTokenStream.get();
 
-  // Using while to be able to handle expressions of the form x+y-z...
   while (true) switch (t.getKind()) {
       case TokenKind::plus:
         left += term();
@@ -90,16 +84,11 @@ double Calculator::expression() {
         return left;
     }
 
-  // Should be unreachable. Without this return the function will not compile.
   return -1;
 }
 double Calculator::redifinition(const std::string& varName) {
   if (!isVarDeclared(varName))
     error("Variable \"" + varName + "\" is not declared");
-  Token t = pTokenStream.get();
-  t = pTokenStream.get();
-  if (t.getKind() != TokenKind::assignment)
-    error("\"=\" missed in redifinition of \"" + varName + "\"");
   double d = expression();
   redefineVar(varName, d);
   return d;
@@ -108,7 +97,6 @@ double Calculator::term() {
   double left = factorialTerm();
   Token t = pTokenStream.get();
 
-  // Using while to be able to handle expressions of the form x*y/z...
   while (true) {
     switch (t.getKind()) {
       case TokenKind::multiply:
@@ -134,8 +122,7 @@ double Calculator::term() {
         return left;
         break;
       }
-      case TokenKind::sqrt:  // Calculating the sqrt function according to
-                             // task 7.
+      case TokenKind::sqrt:
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::openParentesis)
           error("Error in \"sqrt\": \"(\" expected");
@@ -145,8 +132,7 @@ double Calculator::term() {
           error("Error in \"sqrt\": \")\" expected");
         t = pTokenStream.get();
         break;
-      case TokenKind::pow: {  // Calculating the sqrt function according to
-                              // task 10.
+      case TokenKind::pow: {
         t = pTokenStream.get();
         if (t.getKind() != TokenKind::openParentesis)
           error("Error in \"pow\": \"(\" expected");
@@ -199,10 +185,10 @@ double Calculator::primary() {
     }
     case TokenKind::exit:
       pTokenStream.putback(t);
-    case TokenKind::sqrt:  // Calculating the sqrt function according to task 7.
+    case TokenKind::sqrt:
       pTokenStream.putback(t);
       break;
-    case TokenKind::pow:  // Calculating the sqrt function according to task 10.
+    case TokenKind::pow:
       pTokenStream.putback(t);
       break;
     default:
@@ -224,13 +210,13 @@ double Calculator::handleParentesis(TokenKind closeParentesisKind) {
 double Calculator::getVarValue(const std::string& varName) {
   if (!isVarDeclared(varName))
     error("get: \"" + varName + "\" variable is undefined");
-  return pVarTable[varName];
+  return pVarTable[varName].getValue();
 }
 void Calculator::cleanUpMess() {
   pTokenStream.ignore(kindToString(TokenKind::answer)[0]);
 }
 void Calculator::setVarValue(const std::string& varName, double varValue) {
-  if (isVarDeclared(varName)) pVarTable[varName] = varValue;
+  if (isVarDeclared(varName)) pVarTable[varName].setValue(varValue);
   error("set: \"" + varName + "\" variable is undefined");
 }
 bool Calculator::isVarDeclared(const std::string& varName) {
@@ -239,7 +225,6 @@ bool Calculator::isVarDeclared(const std::string& varName) {
 Calculator::Calculator() : pTokenStream() {}
 void Calculator::calculate() {
   while (cin) {
-    // Using try... catch to handle exceptions manualy.
     try {
       cout << prompt;
       Token t = pTokenStream.get();
@@ -253,11 +238,12 @@ void Calculator::calculate() {
     }
   }
 }
-void Calculator::defineVar(const std::string& varName, double varValue) {
+void Calculator::defineVar(const std::string& varName, double varValue,
+                           bool isConst) {
   if (isVarDeclared(varName))
     error("Variable \"" + varName + "\" is declared twice");
-  pVarTable[varName] = varValue;
+  pVarTable[varName] = Variable(varName, varValue, isConst);
 }
 void Calculator::redefineVar(const std::string& varName, double varValue) {
-  pVarTable[varName] = varValue;
+  pVarTable[varName].setValue(varValue);
 }
