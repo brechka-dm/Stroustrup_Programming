@@ -4,15 +4,8 @@
 
 #include "TokenKind.h"
 
-/*
- * A token is an element of a grammar. It can be a numeric value, a variable, or
- * a symbol allowed in the grammar.
- */
 class Token {
-  // Used for variables.
   std::string pName;
-
-  // Used for variables and numeric values.
   double pValue{0.0};
   TokenKind pKind{TokenKind::exit};
 

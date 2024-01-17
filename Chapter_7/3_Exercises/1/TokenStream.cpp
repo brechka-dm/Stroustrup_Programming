@@ -13,12 +13,11 @@ using std::string;
 using std::unordered_set;
 
 namespace {
-const string varDefineKey =
-    "#";  // Keyword changed from "let" to "#" according to task 11.
-const string exitKey =
-    "exit";  // Keyword changed from "q" to "exit" according to task 12.
-const string sqrtKey = "sqrt";
-const string powKey = "pow";
+const string varDefineKey{kindToString(TokenKind::varDefine)};
+const string exitKey{kindToString(TokenKind::exit)};
+const string sqrtKey{kindToString(TokenKind::sqrt)};
+const string powKey{kindToString(TokenKind::pow)};
+const string constDefKey{kindToString(TokenKind::constDefine)};
 
 const unordered_set<TokenKind> brackets{
     TokenKind::openParentesis, TokenKind::closeParentesis,
@@ -67,11 +66,12 @@ Token TokenStream::getAlphanumericToken(char c) const {
   s += c;
   while (cin.get(c) && (isalpha(c) || isdigit(c) || c == '_')) s += c;
   cin.putback(c);
-  return s == varDefineKey ? Token(TokenKind::varDefine)
-         : s == sqrtKey    ? Token(TokenKind::sqrt)
-         : s == powKey     ? Token(TokenKind::pow)
-         : s == exitKey    ? Token(TokenKind::exit)
-                           : Token(TokenKind::varName, s);
+  return s == varDefineKey  ? Token(TokenKind::varDefine)
+         : s == sqrtKey     ? Token(TokenKind::sqrt)
+         : s == powKey      ? Token(TokenKind::pow)
+         : s == constDefKey ? Token(TokenKind::constDefine)
+         : s == exitKey     ? Token(TokenKind::exit)
+                            : Token(TokenKind::varName, s);
 }
 
 TokenStream::TokenStream() : pFull(false), pBuffer(TokenKind::exit) {}

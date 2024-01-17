@@ -13,34 +13,20 @@ struct TokenKindValue {
   const string value;
 };
 const vector<TokenKindValue> tokenKinds{
-    {TokenKind::exit, "exit"},
-    {TokenKind::answer, ";"},
-    {TokenKind::varName, "@"},
-    {TokenKind::varDefine, "#"},
-    {TokenKind::number, "$"},
-    {TokenKind::openParentesis, "("},
-    {TokenKind::closeParentesis, ")"},
-    {TokenKind::openBracket, "{"},
-    {TokenKind::closeBracket, "}"},
-    {TokenKind::plus, "+"},
-    {TokenKind::minus, "-"},
-    {TokenKind::multiply, "*"},
-    {TokenKind::division, "/"},
-    {TokenKind::factorial, "!"},
-    {TokenKind::reminder, "%"},
-    {TokenKind::assignment, "="},
-    {TokenKind::sqrt, "sqrt"},
-    {TokenKind::pow, "pow"},
-    {TokenKind::comma, ","},
-    {TokenKind::alphanumeric, "~"}  // Used to indicate unknown token kind.
-
-};
+    {TokenKind::exit, "exit"},         {TokenKind::answer, ";"},
+    {TokenKind::varName, "@"},         {TokenKind::varDefine, "#"},
+    {TokenKind::number, "$"},          {TokenKind::openParentesis, "("},
+    {TokenKind::closeParentesis, ")"}, {TokenKind::openBracket, "{"},
+    {TokenKind::closeBracket, "}"},    {TokenKind::plus, "+"},
+    {TokenKind::minus, "-"},           {TokenKind::multiply, "*"},
+    {TokenKind::division, "/"},        {TokenKind::factorial, "!"},
+    {TokenKind::reminder, "%"},        {TokenKind::assignment, "="},
+    {TokenKind::sqrt, "sqrt"},         {TokenKind::pow, "pow"},
+    {TokenKind::comma, ","},           {TokenKind::alphanumeric, "~"},
+    {TokenKind::constDefine, "const"}};
 }  // namespace
 
 std::string kindToString(TokenKind kind) {
-  // Using std::find_if see chapter 21.3.
-  // Using lambda-function as argument, see
-  // https://en.cppreference.com/w/cpp/language/lambda
   const auto iter = find_if(
       tokenKinds.begin(), tokenKinds.end(),
       [kind](const TokenKindValue& record) { return record.kind == kind; });
