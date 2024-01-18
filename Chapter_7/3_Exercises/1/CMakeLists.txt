@@ -7,6 +7,8 @@ add_executable(Calculator
                         Calculator.h
                         Error.h
                         main.cpp
+                        Table.cpp
+                        Table.h
                         Token.h
                         TokenKind.cpp
                         TokenKind.h

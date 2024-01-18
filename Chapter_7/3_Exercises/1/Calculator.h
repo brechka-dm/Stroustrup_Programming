@@ -1,13 +1,12 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-
+#include "Table.h"
 #include "TokenStream.h"
 #include "Variable.h"
 
 class Calculator {
-  std::unordered_map<std::string, Variable> pVarTable;
+  // Added use of the Table class as per exercise 9.
+  Table pVarTable;
   TokenStream pTokenStream;
   double statement();
   // isConst indicates whether the declared variable is a constant.
@@ -22,8 +21,7 @@ class Calculator {
   double getVarValue(const std::string& varName);
   void cleanUpMess();
   void setVarValue(const std::string& varName, double varValue);
-  bool isVarDeclared(const std::string& varName);
-
+  
  public:
   Calculator();
   void calculate();

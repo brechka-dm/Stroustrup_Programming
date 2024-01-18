@@ -87,8 +87,6 @@ double Calculator::expression() {
   return -1;
 }
 double Calculator::redifinition(const std::string& varName) {
-  if (!isVarDeclared(varName))
-    error("Variable \"" + varName + "\" is not declared");
   double d = expression();
   redefineVar(varName, d);
   return d;
@@ -208,19 +206,13 @@ double Calculator::handleParentesis(TokenKind closeParentesisKind) {
   return d;
 }
 double Calculator::getVarValue(const std::string& varName) {
-  if (!isVarDeclared(varName))
-    error("get: \"" + varName + "\" variable is undefined");
-  return pVarTable[varName].getValue();
+  return pVarTable.get(varName);
 }
 void Calculator::cleanUpMess() {
   pTokenStream.ignore(kindToString(TokenKind::answer)[0]);
 }
 void Calculator::setVarValue(const std::string& varName, double varValue) {
-  if (isVarDeclared(varName)) pVarTable[varName].setValue(varValue);
-  error("set: \"" + varName + "\" variable is undefined");
-}
-bool Calculator::isVarDeclared(const std::string& varName) {
-  return pVarTable.find(varName) != pVarTable.end();
+  pVarTable.set(varName, varValue);
 }
 Calculator::Calculator() : pTokenStream() {}
 void Calculator::calculate() {
@@ -240,10 +232,8 @@ void Calculator::calculate() {
 }
 void Calculator::defineVar(const std::string& varName, double varValue,
                            bool isConst) {
-  if (isVarDeclared(varName))
-    error("Variable \"" + varName + "\" is declared twice");
-  pVarTable[varName] = Variable(varName, varValue, isConst);
+  pVarTable.define(varName, varValue, isConst);
 }
 void Calculator::redefineVar(const std::string& varName, double varValue) {
-  pVarTable[varName].setValue(varValue);
+  pVarTable.redefine(varName, varValue);
 }
