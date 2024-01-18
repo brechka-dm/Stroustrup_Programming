@@ -13,7 +13,7 @@ struct TokenKindValue {
   const string value;
 };
 const vector<TokenKindValue> tokenKinds{
-    {TokenKind::exit, "exit"},         {TokenKind::answer, ";"},
+    {TokenKind::exit, "exit"},         {TokenKind::answer, "\n"},
     {TokenKind::varName, "@"},         {TokenKind::varDefine, "#"},
     {TokenKind::number, "$"},          {TokenKind::openParentesis, "("},
     {TokenKind::closeParentesis, ")"}, {TokenKind::openBracket, "{"},

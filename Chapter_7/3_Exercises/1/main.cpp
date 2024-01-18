@@ -28,8 +28,6 @@ int main() {
   Calculator calculator;
   while (cin) {
     try {
-      calculator.defineVar("pi", 3.1415926535, true);
-      calculator.defineVar("e", 2.7182818284, true);
       calculator.calculate();
       return 0;
     } catch (std::exception& e) {

@@ -10,8 +10,8 @@ class TokenStream {
   bool pFull = false;
   Token pBuffer;
   Token returnBufer();
-  Token returnNewToken() const;
-  Token getNumberToken(char c) const;
+  Token returnNewToken();
+  Token getNumberToken(char c);
   Token getAlphanumericToken(char c) const;
  public:
   TokenStream();

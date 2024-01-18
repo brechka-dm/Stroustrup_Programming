@@ -43,20 +43,25 @@ Token TokenStream::returnBufer() {
   return pBuffer;
 }
 
-Token TokenStream::returnNewToken() const {
-  char ch;
-  cin >> ch;
-  const TokenKind kind = charToTokenKind(ch);
+Token TokenStream::returnNewToken(){
+  char c;
+  while (cin.get(c) && isspace(c))
+  {
+      if(charToTokenKind(c) != TokenKind::answer)
+          cin.putback(c);
+  }
+  const TokenKind kind = charToTokenKind(c);
   return isAllowedTokenType(kind) ? Token(kind)
-         : isNumber(ch)           ? getNumberToken(ch)
-                                  : getAlphanumericToken(ch);
+         : isNumber(c)           ? getNumberToken(c)
+                                  : getAlphanumericToken(c);
 }
 
-Token TokenStream::getNumberToken(char c) const {
+Token TokenStream::getNumberToken(char c) {
   cin.putback(c);
-  double val;
-  cin >> val;
-  return Token(TokenKind::number, val);
+  string s;
+  while (cin.get(c) && isdigit(c)) s += c;
+  if (charToTokenKind(c) == TokenKind::answer) cin.putback(c);
+  return Token(TokenKind::number, stod(s));
 }
 
 Token TokenStream::getAlphanumericToken(char c) const {
@@ -79,7 +84,11 @@ TokenStream::TokenStream() : pFull(false), pBuffer(TokenKind::exit) {}
 Token TokenStream::get() { return pFull ? returnBufer() : returnNewToken(); }
 
 void TokenStream::putback(Token const& t) {
-  if (pFull) error("Token buffer is full. Unable to putback");
+  if (pFull) 
+  {
+      int c = 0;
+      error("Token buffer is full. Unable to putback");
+  }
   pBuffer = t;
   pFull = true;
 }
