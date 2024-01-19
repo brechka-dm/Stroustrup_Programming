@@ -13,12 +13,6 @@ using std::string;
 using std::unordered_set;
 
 namespace {
-const string varDefineKey{kindToString(TokenKind::varDefine)};
-const string exitKey{kindToString(TokenKind::exit)};
-const string sqrtKey{kindToString(TokenKind::sqrt)};
-const string powKey{kindToString(TokenKind::pow)};
-const string constDefKey{kindToString(TokenKind::constDefine)};
-
 const unordered_set<TokenKind> brackets{
     TokenKind::openParentesis, TokenKind::closeParentesis,
     TokenKind::openBracket, TokenKind::closeBracket};
@@ -27,7 +21,7 @@ const unordered_set<TokenKind> operations{
     TokenKind::division, TokenKind::factorial, TokenKind::reminder};
 const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit,
                                             TokenKind::assignment,
-                                            TokenKind::comma};
+                                            TokenKind::comma, TokenKind::help};
 
 bool isAllowedTokenType(TokenKind kind) {
   return brackets.find(kind) == brackets.end() &&
@@ -84,12 +78,14 @@ Token TokenStream::getAlphanumericToken(char c) const {
   s += c;
   while (cin.get(c) && (isalpha(c) || isdigit(c) || c == '_')) s += c;
   cin.putback(c);
-  return s == varDefineKey  ? Token(TokenKind::varDefine)
-         : s == sqrtKey     ? Token(TokenKind::sqrt)
-         : s == powKey      ? Token(TokenKind::pow)
-         : s == constDefKey ? Token(TokenKind::constDefine)
-         : s == exitKey     ? Token(TokenKind::exit)
-                            : Token(TokenKind::varName, s);
+  return s == kindToString(TokenKind::varDefine) ? Token(TokenKind::varDefine)
+         : s == kindToString(TokenKind::sqrt)    ? Token(TokenKind::sqrt)
+         : s == kindToString(TokenKind::pow)     ? Token(TokenKind::pow)
+         : s == kindToString(TokenKind::constDefine)
+             ? Token(TokenKind::constDefine)
+         : s == kindToString(TokenKind::exit) ? Token(TokenKind::exit)
+         : s == kindToString(TokenKind::help) ? Token(TokenKind::help)
+                                              : Token(TokenKind::varName, s);
 }
 
 TokenStream::TokenStream() : pFull(false), pBuffer(TokenKind::exit) {}

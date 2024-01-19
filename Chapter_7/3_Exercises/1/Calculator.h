@@ -28,4 +28,7 @@ class Calculator {
   // isConst indicates whether the declared variable is a constant.
   void defineVar(const std::string& varName, double varValue, bool isConst);
   void redefineVar(const std::string& varName, double varValue);
+
+  // Contains help. See static explanation in Ch 9.7.2.
+  static const std::string helpString;
 };

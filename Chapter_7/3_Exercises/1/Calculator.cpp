@@ -183,10 +183,15 @@ double Calculator::primary() {
     }
     case TokenKind::exit:
       pTokenStream.putback(t);
+      break;
     case TokenKind::sqrt:
       pTokenStream.putback(t);
       break;
     case TokenKind::pow:
+      pTokenStream.putback(t);
+      break;
+    // Add help support as per Exercise 6.
+    case TokenKind::help:
       pTokenStream.putback(t);
       break;
     default:
@@ -222,6 +227,11 @@ void Calculator::calculate() {
       Token t = pTokenStream.get();
       while (t.getKind() == TokenKind::answer) t = pTokenStream.get();
       if (t.getKind() == TokenKind::exit) return;
+      // Add help support as per Exercise 6.
+      if (t.getKind() == TokenKind::help) {
+        cout << helpString << endl;
+        continue;
+      }
       pTokenStream.putback(t);
       cout << "=" << statement() << endl;
     } catch (exception& e) {
@@ -237,3 +247,12 @@ void Calculator::defineVar(const std::string& varName, double varValue,
 void Calculator::redefineVar(const std::string& varName, double varValue) {
   pVarTable.redefine(varName, varValue);
 }
+
+const std::string Calculator::helpString{R"'(Welcome to the calculator program!
+Please enter expressions containing floating point numbers.
+You can use next operations to create expressions: 
+"+", "-", "*", "/", "!", "{", "}" "(", ")" and functions sqrt() and pow().
+Also you can define variables:
+# x=6 
+Type ";" to get answer.
+Type "exit" to quit.)'"};
