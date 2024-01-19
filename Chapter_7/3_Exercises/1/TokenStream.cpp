@@ -43,25 +43,38 @@ Token TokenStream::returnBufer() {
   return pBuffer;
 }
 
-Token TokenStream::returnNewToken(){
+Token TokenStream::returnNewToken() {
   char c;
-  while (cin.get(c) && isspace(c))
-  {
-      if(charToTokenKind(c) != TokenKind::answer)
-          cin.putback(c);
+  // Read the stream ignoring whitespace characters. But if answer(\n) is
+  // encountered, the token of Answer type returns. TokenKind::answer = '\n'
+  // according to Exercise 5.
+  while (cin.get(c) && isspace(c)) {
+    if (charToTokenKind(c) == TokenKind::answer)
+      return Token(TokenKind::answer);
   }
   const TokenKind kind = charToTokenKind(c);
   return isAllowedTokenType(kind) ? Token(kind)
-         : isNumber(c)           ? getNumberToken(c)
+         : isNumber(c)            ? getNumberToken(c)
                                   : getAlphanumericToken(c);
 }
 
 Token TokenStream::getNumberToken(char c) {
   cin.putback(c);
   string s;
-  while (cin.get(c) && isdigit(c)) s += c;
-  if (charToTokenKind(c) == TokenKind::answer) cin.putback(c);
-  return Token(TokenKind::number, stod(s));
+  // Read the stream as long as the digits and '.'.
+  while (cin.get(c) && (isdigit(c) || c == '.')) s += c;
+  // The last read character is returned back to the stream so that it can be
+  // processed in the next call returnNewToken.
+  cin.putback(c);
+  double val = 0;
+  // We use stod to convert a string to a number. If the string is not converted
+  // to a number stod throws an exception, which we catch.
+  try {
+    val = stod(s);
+  } catch (...) {
+    error("\"" + s + "\" is not a number");
+  }
+  return Token(TokenKind::number, val);
 }
 
 Token TokenStream::getAlphanumericToken(char c) const {
@@ -84,11 +97,7 @@ TokenStream::TokenStream() : pFull(false), pBuffer(TokenKind::exit) {}
 Token TokenStream::get() { return pFull ? returnBufer() : returnNewToken(); }
 
 void TokenStream::putback(Token const& t) {
-  if (pFull) 
-  {
-      int c = 0;
-      error("Token buffer is full. Unable to putback");
-  }
+  if (pFull) error("Token buffer is full. Unable to putback");
   pBuffer = t;
   pFull = true;
 }
@@ -100,6 +109,7 @@ void TokenStream::ignore(char c) {
     return;
   }
   char ch = 0;
-  while (cin >> ch)
+  // Use cin.get to avoid missing the '\n' character.
+  while (cin.get(ch))
     if (ch == c) return;
 }
