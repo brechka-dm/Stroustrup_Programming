@@ -3,9 +3,10 @@
 #include "Calculator.h"
 
 /*
- * This program is improved implementation of the Calculator presented in
- * Chapter 7. In this implementation, individual program components are placed
- * in separate files.
+ * This program extends
+ * https://github.com/brechka-dm/Stroustrup_Programming/tree/766d3bf1b3b56dd63bc82b9f2959ac1913518bd4/Chapter_7/2_Tasks
+ * to solve Exercises 1, 2, 3, 5, 7, 8, and 9 from Chapter 7. The program
+ * retains only the comments related to these exercises.
  */
 
 using std::cerr;

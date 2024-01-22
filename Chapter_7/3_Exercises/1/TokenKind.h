@@ -23,8 +23,10 @@ enum class TokenKind {
   pow,
   comma,
   alphanumeric,
-  constDefine, // Used for consts definition.
-  help // Added for exercise 7.
+  constDefine,   // Used for consts definition (Ex 3).
+  help,          // Added for Exercise 7.
+  exprDelimiter  // Added to separate expressions on the same line, according to
+                 // Exercise 8.
 };
 
 inline bool isNumber(char c) { return c >= '0' && c <= '9' || c == '.'; }

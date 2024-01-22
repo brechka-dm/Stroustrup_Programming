@@ -7,7 +7,7 @@
 
 /*
  * Supports working with a table of variables.
- * Added as per exercise 9.
+ * Added as per Exercise 9.
  */
 class Table {
   std::unordered_map<std::string, Variable> pVarTable;

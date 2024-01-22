@@ -23,7 +23,8 @@ const vector<TokenKindValue> tokenKinds{
     {TokenKind::reminder, "%"},        {TokenKind::assignment, "="},
     {TokenKind::sqrt, "sqrt"},         {TokenKind::pow, "pow"},
     {TokenKind::comma, ","},           {TokenKind::alphanumeric, "~"},
-    {TokenKind::constDefine, "const"}, {TokenKind::help, "help"}};
+    {TokenKind::constDefine, "const"}, {TokenKind::help, "help"},
+    {TokenKind::exprDelimiter, ";"}};
 }  // namespace
 
 std::string kindToString(TokenKind kind) {

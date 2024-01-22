@@ -19,9 +19,9 @@ const unordered_set<TokenKind> brackets{
 const unordered_set<TokenKind> operations{
     TokenKind::plus,     TokenKind::minus,     TokenKind::multiply,
     TokenKind::division, TokenKind::factorial, TokenKind::reminder};
-const unordered_set<TokenKind> instructions{TokenKind::answer, TokenKind::exit,
-                                            TokenKind::assignment,
-                                            TokenKind::comma, TokenKind::help};
+const unordered_set<TokenKind> instructions{
+    TokenKind::answer, TokenKind::exit, TokenKind::assignment,
+    TokenKind::comma,  TokenKind::help, TokenKind::exprDelimiter};
 
 bool isAllowedTokenType(TokenKind kind) {
   return brackets.find(kind) == brackets.end() &&
@@ -72,7 +72,7 @@ Token TokenStream::getNumberToken(char c) {
 }
 
 Token TokenStream::getAlphanumericToken(char c) const {
-  // Added support for underscores in variable names as per exercise 1.
+  // Added support for underscores in variable names as per Exercise 1.
   if (!isalpha(c) && c != '#' && c != '_') error("Incorrect token");
   string s;
   s += c;

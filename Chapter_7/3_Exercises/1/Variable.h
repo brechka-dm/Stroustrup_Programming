@@ -4,6 +4,7 @@
 
 /*
  * Stores variable name and value.
+ * Added per Exercise 3.
  */
 class Variable {
   std::string pName;

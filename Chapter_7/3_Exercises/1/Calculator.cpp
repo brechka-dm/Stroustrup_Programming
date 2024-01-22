@@ -47,7 +47,7 @@ double Calculator::statement() {
   switch (t.getKind()) {
     case TokenKind::varDefine:
       return declaration();
-    case TokenKind::constDefine:  // Constant definition.
+    case TokenKind::constDefine:  // Constant definition (Ex 3).
       return declaration(true);
     default:
       pTokenStream.putback(t);
@@ -182,20 +182,13 @@ double Calculator::primary() {
       return getVarValue(varName);
     }
     case TokenKind::exit:
-      pTokenStream.putback(t);
-      break;
     case TokenKind::sqrt:
-      pTokenStream.putback(t);
-      break;
     case TokenKind::pow:
-      pTokenStream.putback(t);
-      break;
-    // Add help support as per Exercise 6.
-    case TokenKind::help:
+    case TokenKind::help: // Add help support as per Exercise 6.
       pTokenStream.putback(t);
       break;
     default:
-      error("Ptimary expression expected");
+      error("Primary expression expected");
   }
   return -1;
 }
@@ -220,23 +213,54 @@ void Calculator::setVarValue(const std::string& varName, double varValue) {
   pVarTable.set(varName, varValue);
 }
 Calculator::Calculator() : pTokenStream() {}
+
 void Calculator::calculate() {
+  // Collect results (Ex 8).
+  std::vector<double> results;
   while (cin) {
     try {
       cout << prompt;
+
+      // Skip tokens of TokenKind::answer and TokenKind::exprDelimiter types at
+      // the beginning of the statement.
       Token t = pTokenStream.get();
-      while (t.getKind() == TokenKind::answer) t = pTokenStream.get();
-      if (t.getKind() == TokenKind::exit) return;
-      // Add help support as per Exercise 6.
-      if (t.getKind() == TokenKind::help) {
-        cout << helpString << endl;
-        continue;
-      }
+      while (t.getKind() == TokenKind::answer ||
+             t.getKind() == TokenKind::exprDelimiter)
+        t = pTokenStream.get();
       pTokenStream.putback(t);
-      cout << "=" << statement() << endl;
+
+      // Get satement result.
+      double result = statement();
+
+      // Get next token.
+      t = pTokenStream.get();
+
+      // Handle last token.
+      switch (t.getKind()) {
+        case TokenKind::answer:
+          results.push_back(result);
+          cout << "=" << results[0];
+          for (int i = 1; i < results.size(); ++i) cout << "; " << results[i];
+          cout << endl;
+          results.clear();
+          break;
+        case TokenKind::exprDelimiter:
+          // We only put the result into the vector, but not output it.
+          results.push_back(result);
+          break;
+        case TokenKind::exit:
+          return;
+        case TokenKind::help:
+          cout << helpString << endl;
+          results.clear();
+          continue;
+        default:
+          error("Invalid expression");
+      }
     } catch (exception& e) {
       cerr << e.what() << endl;
       cleanUpMess();
+      results.clear();
     }
   }
 }
