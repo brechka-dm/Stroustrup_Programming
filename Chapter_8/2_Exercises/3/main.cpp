@@ -11,6 +11,8 @@
  * where the arguments x and y are of type int, the argument v is an empty
  * variable of type vector<int>, and the argument n is the number of elements to
  * be written into vector v."
+ * 
+ * The fibonacci function is implemented in separate file.
  */
 
 int main() {
