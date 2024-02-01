@@ -8,7 +8,7 @@ using namespace std;
  * "Write a maxv() function that returns the largest element of a vector".
  */
 
-// Usint template to make function more universal: we can use vectors of any
+// Using template to make function more universal: we can use vectors of any
 // type for which the operation > is defined. See Chapter 19.3.
 template <typename T>
 T maxv(const vector<T>& vec) {
