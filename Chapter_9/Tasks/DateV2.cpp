@@ -19,29 +19,32 @@ date_v_1::DateV1 v2_to_v1(const date_v_2::DateV2 v2) {
 }
 }  // namespace
 
+date_v_2::DateV2::DateV2() {
+  // Use time to get current time (see
+  // https://en.cppreference.com/w/cpp/chrono/c/time).
+  time_t now = time(0);
+  // Use tm strucure to represent date/time (see
+  // https://en.cppreference.com/w/cpp/chrono/c/tm).
+  struct tm time_struct;
+  // Use localtime_s to extract tm strucure (see
+  // https://en.cppreference.com/w/c/chrono/localtime).
+  localtime_s(&time_struct, &now);
+  // The initial value of the year in tm is 1900, to get the current year, we
+  // need to add 1900 to the value in tm.
+  this->y = time_struct.tm_year + 1900;
+  // The numbering of months in tm starts from 0, to get the current month,
+  // we need to add 1 to the value in tm.
+  this->m = time_struct.tm_mon + 1;
+  this->d = time_struct.tm_mday;
+}
+
 date_v_2::DateV2::DateV2(int y, int m, int d) {
   // Use date_v_1::is_date_valid to validate input data.
   if (date_v_1::is_date_valid(y, m, d))
     // Use this as a pointer to the current object.
     this->y = y, this->m = m, this->d = d;
-  else {
-    // Use time to get current time (see
-    // https://en.cppreference.com/w/cpp/chrono/c/time).
-    time_t now = time(0);
-    // Use tm strucure to represent date/time (see
-    // https://en.cppreference.com/w/cpp/chrono/c/tm).
-    struct tm time_struct;
-    // Use localtime_s to extract tm strucure (see
-    // https://en.cppreference.com/w/c/chrono/localtime).
-    localtime_s(&time_struct, &now);
-    // The initial value of the year in tm is 1900, to get the current year, we
-    // need to add 1900 to the value in tm.
-    this->y = time_struct.tm_year + 1900;
-    // The numbering of months in tm starts from 0, to get the current month,
-    // we need to add 1 to the value in tm.
-    this->m = time_struct.tm_mon + 1;
-    this->d = time_struct.tm_mday;
-  }
+  else
+    DateV2();
 }
 
 date_v_2::DateV2 date_v_2::add_day(const date_v_2::DateV2& date, int days) {

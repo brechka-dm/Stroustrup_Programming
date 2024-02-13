@@ -9,6 +9,7 @@
 
 namespace date_v_2 {
 struct DateV2 {
+  DateV2();
   // The constructor checks the validity of the entered data, if the data is
   // valid, compiles the date from it, otherwise the date is initialized with
   // "today" value.
