@@ -2,6 +2,10 @@
 
 #include <iostream>
 
+/*
+ * This file contains definiion of namespace Chrono from Chapter 9.8.
+ */
+
 namespace Chrono {
 class Date {
  public:

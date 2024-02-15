@@ -7,5 +7,6 @@ add_executable(date Chrono.cpp
                     DateV1.h
                     DateV2.cpp
                     DateV2.h
-                    main.cpp)
+                    main.cpp
+                    Utils.h)
 target_compile_features(date PUBLIC cxx_std_20)

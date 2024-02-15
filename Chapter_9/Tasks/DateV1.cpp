@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include "Utils.h"
+
 namespace {
 constexpr bool is_february_day_correct(int y, int d) {
   return date_v_1::is_leap_year(y) ? d < 30 : d < 29;
@@ -29,16 +31,6 @@ constexpr int days_in_month(int m, int y) {
   return 31;
 }
 
-// Increases current_year by 1, bypassing the value 0.
-constexpr int inc_year(int current_year) {
-  return current_year == -1 ? 1 : ++current_year;
-}
-
-// Decreases current_year by 1, bypassing the value 0.
-constexpr int dec_year(int current_year) {
-  return current_year == 1 ? -1 : --current_year;
-}
-
 // Increases the value of the month number in dd by 1, given the year boundary
 // crossing (possibly increasing the year).
 date_v_1::DateV1 inc_month(const date_v_1::DateV1& dd) {
@@ -47,7 +39,7 @@ date_v_1::DateV1 inc_month(const date_v_1::DateV1& dd) {
   if (current_m < 12)
     ++current_m;
   else
-    current_m = 1, current_y = inc_year(current_y);
+    current_m = 1, current_y = Utils::inc_year(current_y);
   return date_v_1::DateV1{current_y, current_m, dd.d};
 }
 
@@ -59,7 +51,7 @@ date_v_1::DateV1 dec_month(const date_v_1::DateV1& dd) {
   if (current_m > 1)
     --current_m;
   else
-    current_m = 12, current_y = dec_year(current_y);
+    current_m = 12, current_y = Utils::dec_year(current_y);
   return date_v_1::DateV1{current_y, current_m, dd.d};
 }
 

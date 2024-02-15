@@ -2,6 +2,15 @@
 #include "DateV1.h"
 #include "DateV2.h"
 
+/*
+ * This program is a solution of the tasks from Chapter 9.
+ * The program contains an extended implementation of all versions of the Date
+ * structure from Chapter 9.
+ * DateV1 is an implementation of Chapter 9.4.1. version.
+ * DateV2 is an implementation of Chapter 9.4.2. version.
+ * Chrono is a generalized implementation of versions from Chapters 9.4.3 - 9.8.
+ */
+
 int main() {
   std::cout << "V1: " << std::endl;
   date_v_1::DateV1 dd;
@@ -23,8 +32,8 @@ int main() {
   std::cout << "Day of week: " << Chrono::day_of_week(dd3) << std::endl;
   std::cout << "Next sunday: " << Chrono::next_sunday(dd3) << std::endl;
   std::cout << "Next week day: " << Chrono::next_weekday(dd3) << std::endl;
-  dd3.add_month(-20);
+  dd3.add_month(-9);
   std::cout << "-9m: " << dd3 << std::endl;
-  dd3.add_year(-13);
+  dd3.add_year(13);
   std::cout << "+13y: " << dd3 << std::endl;
 }

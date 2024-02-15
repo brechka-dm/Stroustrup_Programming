@@ -5,16 +5,9 @@
 
 #include "DateV1.h"
 #include "DateV2.h"
+#include "Utils.h"
 
 namespace {
-constexpr int inc_year(int current_year) {
-  return current_year == -1 ? 1 : ++current_year;
-}
-
-constexpr int dec_year(int current_year) {
-  return current_year == 1 ? -1 : --current_year;
-}
-
 std::string day_to_string(Chrono::Day d) {
   switch (d) {
     case Chrono::Day::sunday:
@@ -32,14 +25,19 @@ std::string day_to_string(Chrono::Day d) {
     case Chrono::Day::saturday:
       return "saturday";
   }
+  // Should never happen.
   return "unknown";
 }
 }  // namespace
 
 namespace Chrono {
+// Default date is today.
 Date& default_date() {
+  // DateV2 is initialized with today's date by default.
   const date_v_2::DateV2 source;
-  const Date::Month m{static_cast<Date::Month>(source.m)};
+  // Convert source.m to Date::Month.
+  const Date::Month m {Date::Month(source.m)};
+  // Create Chrono::Date initialized by today's date.
   static Date dd(source.y, m, source.d);
   return dd;
 }
@@ -56,37 +54,45 @@ Date::Date(int yy, Month mm, int dd) : y(yy), m(mm), d(dd) {
 Date::Date(const Date& other) : y(other.y), m(other.m), d(other.d) {}
 
 void Date::add_day(int n) {
+  // Convert month to int.
   const int month{static_cast<int>(m)};
   const date_v_2::DateV2 tmp(y, month, d);
+  // Use date_v_2::add_day to perform calculations.
   const date_v_2::DateV2 modified_date{date_v_2::add_day(tmp, n)};
+  // Convert results to data members.  
   y = modified_date.y;
   m = static_cast<Date::Month>(modified_date.m);
   d = modified_date.d;
 }
 
 void Date::add_month(int n) {
-  const int current_month{static_cast<int>(m) - 1};
+  int current_month{static_cast<int>(m) - 1};
   if (n >= 0) {
     const int new_month{(current_month + n) % 12 + 1};
     const int years{(current_month + n) / 12};
     m = Month(new_month);
     add_year(years);
-  }
-  else{
-    
+  } else {
+    const int years{(current_month + n) / 12 - 1};
+    const int new_month{12 + (current_month + n) % 12};
+    m = Month(new_month + 1);
+    add_year(years);
   }
 }
 
+// Use recursion.
 void Date::add_year(int n) {
-  if (n > 0) y = inc_year(y), add_year(n - 1);
-  if (n < 0) y = dec_year(y), add_year(n + 1);
+  if (n > 0) y = Utils::inc_year(y), add_year(n - 1);
+  if (n < 0) y = Utils::dec_year(y), add_year(n + 1);
 }
 
 bool is_date(int y, Date::Month m, int d) {
   const int month{static_cast<int>(m)};
+  // Use date_v_1::is_date_valid to check date.
   return date_v_1::is_date_valid(y, month, d);
 }
 
+// Use date_v_1::is_leap_year to check year.
 bool leapyear(int y) { return date_v_1::is_leap_year(y); }
 
 bool operator==(const Date& a, const Date& b) {
@@ -116,6 +122,8 @@ std::istream& operator>>(std::istream& is, Date& date) {
   return is;
 }
 
+// Use Zeller's congruence to calc date
+// See https://en.wikipedia.org/wiki/Zeller%27s_congruence
 Day day_of_week(const Date& date) {
   int month = static_cast<int>(date.month());
   int year = date.year();
@@ -130,8 +138,8 @@ Day day_of_week(const Date& date) {
 
   int h = (day + (13 * (month + 1)) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
 
-  // Значение h будет от 0 (суббота) до 6 (пятница).
-  // Преобразуем его к виду, где 0 - воскресенье, 1 - понедельник, и т.д.
+  // The value of h will be from 0 (Saturday) to 6 (Friday).
+  // Convert it to a form where 0 is Sunday, 1 is Monday, etc.
   return Day((h + 6) % 7);
 }
 
