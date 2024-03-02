@@ -21,8 +21,8 @@ class Patron {
   bool isPaid() const { return pPaid; }
 
  private:
-  const std::string pName;
+  std::string pName;
   float pFee{};
-  const int pNumber{};
+  int pNumber{};
   bool pPaid{false};
 };

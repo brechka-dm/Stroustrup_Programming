@@ -31,10 +31,10 @@ class Book {
   bool isIssued() const { return pIssued; }
 
  private:
-  const std::string pIsbn;
-  const std::string pAuthor;
-  const std::string pCaption;
-  const Chrono::Date pRegisterDate;
+  std::string pIsbn;
+  std::string pAuthor;
+  std::string pCaption;
+  Chrono::Date pRegisterDate;
   
   // Added in task 7.
   Genre pGenre;

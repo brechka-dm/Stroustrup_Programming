@@ -18,8 +18,11 @@ source_group("..\\..\\1_Tasks" FILES ${Date_sources})
 
 add_executable(library  Book.cpp
                         Book.h
+                        Library.cpp
+                        Library.h
                         main.cpp
                         Patron.cpp
                         Patron.h
+                        Transaction.h
                         ${Date_sources})
 target_compile_features(library PUBLIC cxx_std_20)
